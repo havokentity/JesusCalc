@@ -90,6 +90,7 @@ h2{font-size:16px;margin:0 0 10px}
     <label><input type="checkbox" value="combos"> Title + nation combos</label>
     <label><input type="checkbox" value="names" checked> Holy name + title combos</label>
     <label><input type="checkbox" value="unames" checked> Unholy name + title combos</label>
+    <label><input type="checkbox" value="judge" checked> God judging the devil</label>
     <label>Min ciphers <select id="mfMin"><option>1</option><option selected>2</option><option>3</option><option>4</option></select></label>
     <label><input type="checkbox" value="custom"> My list</label>
   </div>
@@ -172,7 +173,7 @@ $('cA').oninput = $('cB').oninput = renderCompare;
 renderCompare();
 
 const LISTS = {
-  holy: ['God','Jesus','Jesus Christ','Christ','Messiah','Yahweh','Jehovah','Elohim','Adonai','El Shaddai','Emmanuel','Immanuel','Holy Spirit','Holy Ghost','Lamb of God','Son of God','Son of Man','King of Kings','Lord of Lords','Alpha and Omega','Prince of Peace','Word of God','Lion of Judah','Good Shepherd','Savior','Redeemer','Most High','Ancient of Days','Michael','Gabriel','Raphael','Mary','Joseph','Peter','Paul','John','Moses','Abraham','David','Elijah','Yeshua','ישוע','יהוה','Ἰησοῦς','Χριστός','ישוע המשיח','One Five Three'],
+  holy: ['God','Jesus','Jesus Christ','Christ','Messiah','Yahweh','Jehovah','Elohim','Adonai','El Shaddai','Emmanuel','Immanuel','Holy Spirit','Holy Ghost','Lamb of God','Son of God','Son of Man','King of Kings','Lord of Lords','Alpha and Omega','Prince of Peace','Word of God','Lion of Judah','Good Shepherd','Savior','Redeemer','Most High','Ancient of Days','Michael','Gabriel','Raphael','Mary','Joseph','Peter','Paul','John','Moses','Abraham','David','Elijah','Yeshua','ישוע','יהוה','Ἰησοῦς','Χριστός','ישוע המשיח','One Five Three','One Hundred Fifty Three','One Hundred and Fifty Three','Hundred Fifty Three','One Fifty Three','One Five Three Fish','One Hundred Fifty Three Fish','One Hundred and Fifty Three Fish','Hundred and Fifty Three Great Fish','Great Fishes One Hundred Fifty Three'],
   unholy: ['Satan','Devil','Lucifer','Beelzebub','Belial','Mammon','Moloch','Baal','Leviathan','Antichrist','Beast','Serpent','Dragon','Abaddon','Apollyon','Asmodeus','Azazel','Lilith','Judas','Jezebel','Nimrod','False Prophet','Man of Sin','Son of Perdition','Mark of the Beast','Whore of Babylon','Prince of Darkness','Father of Lies','Ἀντίχριστος','שטן'],
   nations: ['Israel','Judah','Babylon','Egypt','Assyria','Persia','Greece','Rome','Edom','Moab','Gog','Magog','America','United States','England','Britain','France','Germany','Russia','China','India','Iran','Iraq','Syria','Turkey','Italy','Spain','Japan','Europe','Vatican','Jerusalem','Zion'],
 };
@@ -184,6 +185,10 @@ const EPITHETS = ['Son of David','Son of God','Son of Man','Son of Mary','Son of
 const UNHOLY_NAMES = ['Satan','Lucifer','the Devil','Beelzebub','Antichrist','the Beast','the Dragon','Abaddon','Apollyon','Belial'];
 const UNHOLY_EPITHETS = ['God of Destruction','God of Death','God of Darkness','God of This World','God of War','Lord of Destruction','Lord of Death','Lord of Darkness','Lord of the Flies','Prince of Darkness','Prince of This World','Prince of the Air','Father of Lies','Destroyer of Worlds','Bringer of Death','Angel of Death','Angel of Light','King of the Abyss','Ruler of Hell','Return from the Dead','Returned from the Dead','Returns from the Dead','Risen from the Dead','Rise from the Pit','Risen from the Abyss','Back from the Dead','Resurrected','the Deceiver','the Accuser','the Adversary','the Destroyer','the Tempter','the Morning Star','Son of Perdition',
   'Timeless Destruction','Eternal Destruction','Endless Destruction','Ancient Destruction','Everlasting Destruction','Son of Destruction','Child of Destruction','Father of Destruction','Bringer of Destruction','Lord of Ruin','God of Ruin','Timeless Darkness','Eternal Darkness','Son of Darkness','Son of Satan','Son of the Devil','Abomination of Desolation','Man of Lawlessness','Man of Sin','Lawless One','Evil One','Wicked One','Great Deceiver','Old Serpent','Great Dragon','Fallen Angel','Fallen One','Destroyer','Deceiver','Beast from the Sea','Beast from the Earth','Beast from the Abyss'];
+const JUDGES = ['God','Jesus','Jesus Christ','the Lord','Christ','Michael','the Lamb','the Most High'];
+const JUDGE_VERBS = ['punishes','punished','punishing','judges','judged','judging','destroys','destroyed','destroying','defeats','defeated','defeating','binds','bound','binding','casts out','cast out','casting out','crushes','crushed','crushing','rebukes','rebuked','rebuking','condemns','condemned','condemning','conquers','conquered','conquering','overthrows','overthrew'];
+const JUDGED = ['Satan','the Devil','a Devil','Lucifer','the Beast','the Dragon','the Serpent','the Antichrist','Beelzebub','Demons','the Demon'];
+const JUDGE_PHRASES = ['Punishment of the Devil','Punishment of Satan','Judgment of Satan','Judgment of the Devil','Defeat of Satan','Fall of Lucifer','Fall of Satan','Satan Cast into the Lake of Fire','Devil Cast into the Lake of Fire','Lake of Fire','Bottomless Pit','Satan Bound for a Thousand Years','The Lord Rebuke Thee','The Lord Rebuke You Satan','Get Thee Behind Me Satan','Serpent Head Crushed','Crushing the Serpent','Wrath of God','Day of Judgment','Day of the Lord','Victory over Satan','Victory over the Devil'];
 // every title with and without a leading "the"
 const withThe = list => [...new Set(list.flatMap(e => /^the /i.test(e) ? [e, e.slice(4)] : [e, 'the '+e]))];
 
@@ -192,6 +197,7 @@ function mfEntries(){
   for (const k of ['holy','unholy','nations']) if (on.includes(k)) LISTS[k].forEach(p => out.push([p, k]));
   if (on.includes('names')) withThe(EPITHETS).forEach(e => { out.push([e, 'holy title']); HOLY_NAMES.forEach(h => { if (!e.startsWith(h)) out.push([h+' '+e, 'name combo']); }); });
   if (on.includes('unames')) withThe(UNHOLY_EPITHETS).forEach(e => { out.push([e, 'unholy title']); UNHOLY_NAMES.forEach(h => out.push([h+' '+e, 'unholy combo'])); });
+  if (on.includes('judge')) { JUDGE_PHRASES.forEach(p => out.push([p, 'judgment'])); JUDGES.forEach(j => JUDGE_VERBS.forEach(v => JUDGED.forEach(d => out.push([j+' '+v+' '+d, 'judgment'])))); }
   if (on.includes('combos')) TITLES.forEach(t => LISTS.nations.forEach(n => out.push([t+' '+n, 'combo'])));
   if (on.includes('custom')) $('mfCustom').value.split('\n').map(s=>s.trim()).filter(Boolean).forEach(p => out.push([p, 'mine']));
   const seen = new Set();
