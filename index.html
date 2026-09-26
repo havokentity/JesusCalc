@@ -79,6 +79,26 @@ h2{font-size:16px;margin:0 0 10px}
 </div>
 
 <div class="card wrap">
+  <h2>Match Finder</h2>
+  <div class="row">
+    <input id="mf" placeholder="Name or phrase to search against lists">
+  </div>
+  <div class="row" id="mfOpts" style="margin-top:10px;font-size:14px">
+    <label><input type="checkbox" value="holy" checked> Holy names</label>
+    <label><input type="checkbox" value="unholy" checked> Unholy names</label>
+    <label><input type="checkbox" value="nations" checked> Nations</label>
+    <label><input type="checkbox" value="combos"> Title + nation combos</label>
+    <label><input type="checkbox" value="custom"> My list</label>
+  </div>
+  <textarea id="mfCustom" rows="3" placeholder="My list: one name per line" style="display:none;width:100%;margin-top:10px;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit"></textarea>
+  <p class="muted" id="mfStats"></p>
+  <table>
+    <thead><tr><th>Phrase</th><th>List</th><th>Matching ciphers</th><th>Count</th></tr></thead>
+    <tbody id="mfOut"></tbody>
+  </table>
+</div>
+
+<div class="card wrap">
   <h2>History</h2>
   <table><thead id="histHead"></thead><tbody id="hist"></tbody></table>
 </div>
@@ -147,6 +167,39 @@ function renderCompare(){
 }
 $('cA').oninput = $('cB').oninput = renderCompare;
 renderCompare();
+
+const LISTS = {
+  holy: ['God','Jesus','Jesus Christ','Christ','Messiah','Yahweh','Jehovah','Elohim','Adonai','El Shaddai','Emmanuel','Immanuel','Holy Spirit','Holy Ghost','Lamb of God','Son of God','Son of Man','King of Kings','Lord of Lords','Alpha and Omega','Prince of Peace','Word of God','Lion of Judah','Good Shepherd','Savior','Redeemer','Most High','Ancient of Days','Michael','Gabriel','Raphael','Mary','Joseph','Peter','Paul','John','Moses','Abraham','David','Elijah','Yeshua','ישוע','יהוה','Ἰησοῦς','Χριστός','ישוע המשיח'],
+  unholy: ['Satan','Devil','Lucifer','Beelzebub','Belial','Mammon','Moloch','Baal','Leviathan','Antichrist','Beast','Serpent','Dragon','Abaddon','Apollyon','Asmodeus','Azazel','Lilith','Judas','Jezebel','Nimrod','False Prophet','Man of Sin','Son of Perdition','Mark of the Beast','Whore of Babylon','Prince of Darkness','Father of Lies','Ἀντίχριστος','שטן'],
+  nations: ['Israel','Judah','Babylon','Egypt','Assyria','Persia','Greece','Rome','Edom','Moab','Gog','Magog','America','United States','England','Britain','France','Germany','Russia','China','India','Iran','Iraq','Syria','Turkey','Italy','Spain','Japan','Europe','Vatican','Jerusalem','Zion'],
+};
+const TITLES = ['King of','Prince of','Lord of','Beast of','Savior of','Light of'];
+
+function mfEntries(){
+  const on = [...document.querySelectorAll('#mfOpts input:checked')].map(i => i.value), out = [];
+  for (const k of ['holy','unholy','nations']) if (on.includes(k)) LISTS[k].forEach(p => out.push([p, k]));
+  if (on.includes('combos')) TITLES.forEach(t => LISTS.nations.forEach(n => out.push([t+' '+n, 'combo'])));
+  if (on.includes('custom')) $('mfCustom').value.split('\n').map(s=>s.trim()).filter(Boolean).forEach(p => out.push([p, 'mine']));
+  return out;
+}
+
+function renderMatches(){
+  $('mfCustom').style.display = document.querySelector('#mfOpts input[value=custom]').checked ? 'block' : 'none';
+  const q = $('mf').value.trim();
+  if (!q) { $('mfOut').innerHTML = ''; $('mfStats').textContent = ''; return; }
+  const mine = compute(q), rows = [];
+  let tried = 0;
+  for (const [p, list] of mfEntries()) {
+    const hits = compute(p).filter((r,i) => { const ok = r.total && mine[i].total; if (ok) tried++; return ok && r.total === mine[i].total; });
+    if (hits.length) rows.push({p, list, hits});
+  }
+  rows.sort((a,b) => b.hits.length - a.hits.length);
+  const n = rows.reduce((a,r)=>a+r.hits.length,0);
+  $('mfStats').textContent = `${n} matches out of ${tried} cipher comparisons (${tried ? (100*n/tried).toFixed(1) : 0}%). Tip: try a random name too; with many ciphers and long lists, some matches happen by chance.`;
+  const esc = s => s.replace(/</g,'&lt;');
+  $('mfOut').innerHTML = rows.map(r => `<tr><td>${esc(r.p)}</td><td class="muted">${r.list}</td><td>${r.hits.map(h=>`<span class="badge part">${h.name.split(' (')[0]} ${h.total}</span>`).join(' ')}</td><td class="num">${r.hits.length}</td></tr>`).join('') || '<tr><td colspan="4" class="muted">No exact matches.</td></tr>';
+}
+$('mf').oninput = $('mfCustom').oninput = $('mfOpts').onchange = renderMatches;
 
 const persist =() => { try { localStorage.setItem('gem-hist', JSON.stringify(history)); } catch {} };
 
