@@ -201,7 +201,7 @@ function renderMatches(){
 }
 $('mf').oninput = $('mfCustom').oninput = $('mfOpts').onchange = renderMatches;
 
-const persist =() => { try { localStorage.setItem('gem-hist', JSON.stringify(history)); } catch {} };
+const persist = () => { try { localStorage.setItem('gem-hist', JSON.stringify(history)); } catch {} };
 
 $('q').oninput = render;
 $('q').onkeydown = e => { if (e.key === 'Enter') $('save').click(); };
