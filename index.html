@@ -111,9 +111,9 @@ function translit(s){
 
 const CIPHERS = [
   {name:'Hebrew (Mispar Hechrachi)', run:s => heb(s).length ? ['Hebrew', pairs(heb(s), c=>HEB[c])] : ['English→Jewish', pairs([...eng(s)], c=>JEWISH[c])]},
-  {name:'English Ordinal', run:s => ['English', pairs([...eng(s)], ordinal)]},
+  {name:'Simple Gematria (English Ordinal)', run:s => ['English', pairs([...eng(s)], ordinal)]},
   {name:'Simple English (Reduction)', run:s => ['English', pairs([...eng(s)], c => reduce(ordinal(c)))]},
-  {name:'English Sumerian (×6)', run:s => ['English', pairs([...eng(s)], c => ordinal(c)*6)]},
+  {name:'English Gematria (Sumerian ×6)', run:s => ['English', pairs([...eng(s)], c => ordinal(c)*6)]},
   {name:'Latin (Agrippa)', run:s => ['English', [...eng(s)].map(c => [c, c==='w' ? 400 : LATIN[{j:'i',u:'v'}[c]||c]])]},
   {name:'Greek (English transliterated)', run:s => ['English→Greek', translit(s)]},
   {name:'Isopsephy (Greek script)', run:s => ['Greek', pairs(grk(s), c=>GREEK[c])]},

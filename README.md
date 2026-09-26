@@ -1,6 +1,6 @@
 # JesusCalc
 
-Gematria calculator (Hebrew, English Ordinal, Simple English, Sumerian, Latin, Greek, Isopsephy) in a single HTML file.
+Gematria calculator (Hebrew, Simple Gematria, English Gematria, Simple English Reduction, Latin, Greek, Isopsephy) in a single HTML file.
 
 **Live:** https://havokentity.github.io/JesusCalc/
 
