@@ -89,6 +89,7 @@ h2{font-size:16px;margin:0 0 10px}
     <label><input type="checkbox" value="nations" checked> Nations</label>
     <label><input type="checkbox" value="combos"> Title + nation combos</label>
     <label><input type="checkbox" value="names" checked> Holy name + title combos</label>
+    <label><input type="checkbox" value="unames" checked> Unholy name + title combos</label>
     <label>Min ciphers <select id="mfMin"><option>1</option><option selected>2</option><option>3</option><option>4</option></select></label>
     <label><input type="checkbox" value="custom"> My list</label>
   </div>
@@ -177,12 +178,16 @@ const LISTS = {
 };
 const TITLES = ['King of','Prince of','Lord of','Beast of','Savior of','Light of'];
 const HOLY_NAMES = ['Jesus','Jesus Christ','Christ','Lord Jesus','Yeshua','Messiah','Jesus the Christ','Jesus of Nazareth'];
-const EPITHETS = ['Son of David','Son of God','Son of Man','Son of Mary','Son of Joseph','King of Kings','Lord of Lords','King of the Jews','King of Israel','King of Glory','Lamb of God','Lion of Judah','Word of God','Light of the World','Bread of Life','Prince of Peace','Alpha and Omega','the Good Shepherd','the Messiah','the Savior','the Redeemer','the Lord','our Lord','our Savior','the Son of God','the Holy One','the Way the Truth and the Life','the Resurrection and the Life','Almighty','Emmanuel'];
+const EPITHETS = ['Son of David','Son of God','Son of Man','Son of Mary','Son of Joseph','King of Kings','Lord of Lords','King of the Jews','King of Israel','King of Glory','Lamb of God','Lion of Judah','Word of God','Light of the World','Bread of Life','Prince of Peace','Alpha and Omega','the Good Shepherd','the Messiah','the Savior','the Redeemer','the Lord','our Lord','our Savior','the Son of God','the Holy One','the Way the Truth and the Life','the Resurrection and the Life','Almighty','Emmanuel',
+  'Giver of Life','Giver of Eternal Life','Lord of Life','Prince of Life','Return from the Dead','Returned from the Dead','Risen from the Dead','Rose from the Dead','Raised from the Dead','the Risen One','Conqueror of Death','Destroyer of Death','Firstborn from the Dead','God of Creation','God of Salvation','God of Life','Second Coming','Returns in Glory','Judge of the Living and the Dead'];
+const UNHOLY_NAMES = ['Satan','Lucifer','the Devil','Beelzebub','Antichrist','the Beast','the Dragon','Abaddon','Apollyon','Belial'];
+const UNHOLY_EPITHETS = ['God of Destruction','God of Death','God of Darkness','God of This World','God of War','Lord of Destruction','Lord of Death','Lord of Darkness','Lord of the Flies','Prince of Darkness','Prince of This World','Prince of the Air','Father of Lies','Destroyer of Worlds','Bringer of Death','Angel of Death','Angel of Light','King of the Abyss','Ruler of Hell','Return from the Dead','Returned from the Dead','Returns from the Dead','Risen from the Dead','Rise from the Pit','Risen from the Abyss','Back from the Dead','Resurrected','the Deceiver','the Accuser','the Adversary','the Destroyer','the Tempter','the Morning Star','Son of Perdition'];
 
 function mfEntries(){
   const on = [...document.querySelectorAll('#mfOpts input:checked')].map(i => i.value), out = [];
   for (const k of ['holy','unholy','nations']) if (on.includes(k)) LISTS[k].forEach(p => out.push([p, k]));
   if (on.includes('names')) HOLY_NAMES.forEach(h => EPITHETS.forEach(e => { if (!e.startsWith(h)) out.push([h+' '+e, 'name combo']); }));
+  if (on.includes('unames')) UNHOLY_NAMES.forEach(h => UNHOLY_EPITHETS.forEach(e => out.push([h+' '+e, 'unholy combo'])));
   if (on.includes('combos')) TITLES.forEach(t => LISTS.nations.forEach(n => out.push([t+' '+n, 'combo'])));
   if (on.includes('custom')) $('mfCustom').value.split('\n').map(s=>s.trim()).filter(Boolean).forEach(p => out.push([p, 'mine']));
   return out;
