@@ -26,6 +26,9 @@ button.ghost{background:transparent;color:var(--accent);border:1px solid var(--l
 table{width:100%;border-collapse:collapse}
 th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
 th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.badge{display:inline-block;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:600;background:var(--accent);color:var(--card)}
+.badge.part{background:var(--accent-soft);color:var(--accent)}
+tr.match td{background:var(--accent-soft)}
 td.num{font-variant-numeric:tabular-nums;font-weight:600;color:var(--accent);font-size:18px}
 tr.sel td{background:var(--accent-soft)}
 tbody tr{cursor:pointer}
@@ -61,6 +64,18 @@ h2{font-size:16px;margin:0 0 10px}
 <div class="card">
   <h2 id="bdTitle">Breakdown</h2>
   <div class="chips" id="breakdown"></div>
+</div>
+
+<div class="card wrap">
+  <h2>Compare</h2>
+  <div class="row">
+    <input id="cA" placeholder="First word">
+    <input id="cB" placeholder="Second word">
+  </div>
+  <table style="margin-top:12px">
+    <thead><tr><th>Cipher</th><th id="hA">A</th><th id="hB">B</th><th>Difference</th><th>Match</th></tr></thead>
+    <tbody id="cmp"></tbody>
+  </table>
 </div>
 
 <div class="card wrap">
@@ -119,7 +134,21 @@ function render(){
   $('histHead').innerHTML = `<tr><th>Text</th>${CIPHERS.map(c=>`<th>${c.name.split(' (')[0]}</th>`).join('')}<th></th></tr>`;
   $('hist').innerHTML = history.map((h,i)=>`<tr><td>${h.replace(/</g,'&lt;')}</td>${compute(h).map(r=>`<td class="num">${r.total}</td>`).join('')}<td><button class="ghost" data-del="${i}">✕</button></td></tr>`).join('');
 }
-const persist = () => { try { localStorage.setItem('gem-hist', JSON.stringify(history)); } catch {} };
+function renderCompare(){
+  const a = $('cA').value.trim(), b = $('cB').value.trim(), ra = compute(a), rb = compute(b);
+  const esc = s => s.replace(/</g,'&lt;');
+  $('hA').innerHTML = esc(a) || 'A'; $('hB').innerHTML = esc(b) || 'B';
+  $('cmp').innerHTML = ra.map((x,i) => {
+    const y = rb[i], both = a && b && x.total && y.total;
+    const eq = both && x.total === y.total, red = both && !eq && reduce(x.total) === reduce(y.total);
+    const badge = eq ? '<span class="badge">Equal</span>' : red ? '<span class="badge part">Same root ' + reduce(x.total) + '</span>' : '<span class="muted">—</span>';
+    return `<tr class="${eq?'match':''}"><td>${x.name}</td><td class="num">${x.total}</td><td class="num">${y.total}</td><td>${both ? Math.abs(x.total-y.total) : '—'}</td><td>${badge}</td></tr>`;
+  }).join('');
+}
+$('cA').oninput = $('cB').oninput = renderCompare;
+renderCompare();
+
+const persist =() => { try { localStorage.setItem('gem-hist', JSON.stringify(history)); } catch {} };
 
 $('q').oninput = render;
 $('q').onkeydown = e => { if (e.key === 'Enter') $('save').click(); };
