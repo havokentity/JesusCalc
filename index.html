@@ -91,6 +91,7 @@ h2{font-size:16px;margin:0 0 10px}
     <label><input type="checkbox" value="names" checked> Holy name + title combos</label>
     <label><input type="checkbox" value="unames" checked> Unholy name + title combos</label>
     <label><input type="checkbox" value="judge" checked> God judging the devil</label>
+    <label><input type="checkbox" value="phrases" checked> Your phrases</label>
     <label>Min ciphers <select id="mfMin"><option>1</option><option selected>2</option><option>3</option><option>4</option></select></label>
     <label><input type="checkbox" value="custom"> My list</label>
   </div>
@@ -189,6 +190,15 @@ const JUDGES = ['God','Jesus','Jesus Christ','the Lord','Christ','Michael','the 
 const JUDGE_VERBS = ['punishes','punished','punishing','judges','judged','judging','destroys','destroyed','destroying','defeats','defeated','defeating','binds','bound','binding','casts out','cast out','casting out','crushes','crushed','crushing','rebukes','rebuked','rebuking','condemns','condemned','condemning','conquers','conquered','conquering','overthrows','overthrew'];
 const JUDGED = ['Satan','the Devil','a Devil','Lucifer','the Beast','the Dragon','the Serpent','the Antichrist','Beelzebub','Demons','the Demon'];
 const JUDGE_PHRASES = ['Punishment of the Devil','Punishment of Satan','Judgment of Satan','Judgment of the Devil','Defeat of Satan','Fall of Lucifer','Fall of Satan','Satan Cast into the Lake of Fire','Devil Cast into the Lake of Fire','Lake of Fire','Bottomless Pit','Satan Bound for a Thousand Years','The Lord Rebuke Thee','The Lord Rebuke You Satan','Get Thee Behind Me Satan','Serpent Head Crushed','Crushing the Serpent','Wrath of God','Day of Judgment','Day of the Lord','Victory over Satan','Victory over the Devil'];
+// user-supplied phrases, grouped by theme; variations are generated below
+const PHRASES = {
+  'Lion of Judah': ['Lion of Judah Blast Off','Lion of Judah Talented','Lion of Judah Rises','Lion of Judah Roars','Lion of Judah Returns','Lion of Judah Has Come','Lion of Judah Victorious','Lion of Judah Anointed','Lion of Judah Chosen','Lion of Judah Gifted'],
+  'Heaven & salvation': ['The Access into Heaven','Access into Heaven','Access to Heaven','The Gate of Heaven','She Gets into Heaven','She Got into Heaven','She Will Get into Heaven','Shes Going to Be Saved','She Is Going to Be Saved','She Will Be Saved','She Is Saved','Shes Saved','Saved by Grace','Going to Heaven'],
+  'Revelation': ['Secret Is Revealed God','The Secret Is Revealed','Secret Revealed','God Reveals the Secret','The Secret of God','Hidden Things Revealed','The Mystery Revealed','Revealed by God'],
+  'Trial & victim': ['The Hard Road Be Traveled','The Hard Road Traveled','Hard Road to Travel','The Narrow Road','The Narrow Way','Shes the Real Victim','She Is the Real Victim','The Real Victim','Innocent Victim','She Was the Victim'],
+};
+// she -> he / they variants for the personal phrases
+const pronounVariants = p => /\bshes?\b/i.test(p) ? [p, p.replace(/\bShes\b/g,'Hes').replace(/\bShe\b/g,'He'), p.replace(/\bShes\b/g,'Theyre').replace(/\bShe Is\b/g,'They Are').replace(/\bShe\b/g,'They')] : [p];
 // every title with and without a leading "the"
 const withThe = list => [...new Set(list.flatMap(e => /^the /i.test(e) ? [e, e.slice(4)] : [e, 'the '+e]))];
 
@@ -198,6 +208,7 @@ function mfEntries(){
   if (on.includes('names')) withThe(EPITHETS).forEach(e => { out.push([e, 'holy title']); HOLY_NAMES.forEach(h => { if (!e.startsWith(h)) out.push([h+' '+e, 'name combo']); }); });
   if (on.includes('unames')) withThe(UNHOLY_EPITHETS).forEach(e => { out.push([e, 'unholy title']); UNHOLY_NAMES.forEach(h => out.push([h+' '+e, 'unholy combo'])); });
   if (on.includes('judge')) { JUDGE_PHRASES.forEach(p => out.push([p, 'judgment'])); JUDGES.forEach(j => JUDGE_VERBS.forEach(v => JUDGED.forEach(d => out.push([j+' '+v+' '+d, 'judgment'])))); }
+  if (on.includes('phrases')) for (const [cat, ps] of Object.entries(PHRASES)) ps.flatMap(pronounVariants).forEach(p => out.push([p, cat]));
   if (on.includes('combos')) TITLES.forEach(t => LISTS.nations.forEach(n => out.push([t+' '+n, 'combo'])));
   if (on.includes('custom')) $('mfCustom').value.split('\n').map(s=>s.trim()).filter(Boolean).forEach(p => out.push([p, 'mine']));
   const seen = new Set();
