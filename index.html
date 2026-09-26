@@ -76,6 +76,11 @@ h2{font-size:16px;margin:0 0 10px}
     <thead><tr><th>Cipher</th><th id="hA">A</th><th id="hB">B</th><th>Difference</th><th>Match</th></tr></thead>
     <tbody id="cmp"></tbody>
   </table>
+  <div class="row" style="margin-top:12px;align-items:center">
+    <button id="rareBtn">How rare is this?</button>
+    <span class="muted">Tests 20,000 random names shaped like the second box against the first box.</span>
+  </div>
+  <div id="rareOut" style="margin-top:10px"></div>
 </div>
 
 <div class="card wrap">
@@ -92,11 +97,14 @@ h2{font-size:16px;margin:0 0 10px}
     <label><input type="checkbox" value="unames" checked> Unholy name + title combos</label>
     <label><input type="checkbox" value="judge" checked> God judging the devil</label>
     <label><input type="checkbox" value="phrases" checked> Your phrases</label>
+    <span id="mfResearch" class="row" style="gap:10px"></span>
     <label>Min ciphers <select id="mfMin"><option>1</option><option selected>2</option><option>3</option><option>4</option></select></label>
     <label><input type="checkbox" value="custom"> My list</label>
   </div>
   <textarea id="mfCustom" rows="3" placeholder="My list: one name per line" style="display:none;width:100%;margin-top:10px;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit"></textarea>
   <p class="muted" id="mfStats"></p>
+  <div class="row" style="align-items:center"><button id="mfRare">Compare with random names</button><span class="muted">Runs 300 random names with the same word count through the same lists.</span></div>
+  <p id="mfRareOut"></p>
   <table>
     <thead><tr><th>Phrase</th><th>List</th><th>Matching ciphers</th><th>Count</th></tr></thead>
     <tbody id="mfOut"></tbody>
@@ -111,6 +119,7 @@ h2{font-size:16px;margin:0 0 10px}
 <p class="muted">Notes: Hebrew uses Mispar Hechrachi (finals = base value); English text in the Hebrew cipher uses the common "Jewish" Latin mapping. Latin uses Agrippa's 23-letter table (J→I, U→V, W→VV). Greek (English) transliterates Latin letters to Greek (th→θ, ph→φ, ch→χ, ps→ψ) then applies isopsephy. Isopsephy works on Greek script, including archaic ϛ/ϝ=6, ϙ=90, ϡ=900.</p>
 </main>
 
+<script src="phrases.js"></script>
 <script>
 const HEB = {'א':1,'ב':2,'ג':3,'ד':4,'ה':5,'ו':6,'ז':7,'ח':8,'ט':9,'י':10,'כ':20,'ך':20,'ל':30,'מ':40,'ם':40,'נ':50,'ן':50,'ס':60,'ע':70,'פ':80,'ף':80,'צ':90,'ץ':90,'ק':100,'ר':200,'ש':300,'ת':400};
 const JEWISH = {a:1,b:2,c:3,d:4,e:5,f:6,g:7,h:8,i:9,k:10,l:20,m:30,n:40,o:50,p:60,q:70,r:80,s:90,t:100,u:200,x:300,y:400,j:600,z:500,v:700,w:900};
@@ -171,6 +180,30 @@ function renderCompare(){
   }).join('');
 }
 $('cA').oninput = $('cB').oninput = renderCompare;
+
+const FIRST = ['James','Mary','John','Patricia','Robert','Jennifer','Michael','Linda','William','Elizabeth','David','Susan','Richard','Jessica','Joseph','Sarah','Thomas','Karen','Charles','Nancy','Daniel','Lisa','Matthew','Betty','Anthony','Sandra','Mark','Ashley','Paul','Emily','Steven','Donna','Andrew','Michelle','Kenneth','Carol','George','Amanda','Rajesh','Priya','Amit','Sunita','Vikram','Anjali','Suresh','Deepa','Arjun','Kavita','Ravi','Neha','Anil','Pooja','Sanjay','Meera','Carlos','Maria','Jose','Ana','Luis','Sofia','Juan','Lucia','Pedro','Elena','Ahmed','Fatima','Omar','Aisha','Hassan','Leila','Wei','Mei','Hiroshi','Yuki','Kwame','Amara','Ivan','Olga','Pierre','Claire','Hans','Greta','Liam','Noah','Oliver','Emma','Ava','Isabella','Lucas','Mateo','Francis','Clara','Vincent','Rosa','Anthony','Teresa','Dominic','Agnes'];
+const LAST = ['Smith','Johnson','Williams','Brown','Jones','Garcia','Miller','Davis','Rodriguez','Martinez','Hernandez','Lopez','Gonzalez','Wilson','Anderson','Thomas','Taylor','Moore','Jackson','Martin','Lee','Perez','Thompson','White','Harris','Sanchez','Clark','Ramirez','Lewis','Robinson','Walker','Young','Allen','King','Wright','Scott','Torres','Nguyen','Hill','Flores','Sharma','Patel','Singh','Kumar','Gupta','Reddy','Nair','Iyer','Menon','Rao','Dsouza','Dsilva','Fernandes','Pereira','Rodrigues','Pinto','Dcosta','Lobo','Mendonca','Almeida','Khan','Ali','Hussain','Chen','Wang','Li','Zhang','Tanaka','Sato','Kim','Park','Mensah','Okafor','Ivanov','Petrov','Dubois','Laurent','Muller','Schmidt','Rossi','Russo','Silva','Santos','Oliveira','Costa','Murphy','Kelly','OBrien','Walsh','Novak','Kowalski','Nowak','Jensen','Hansen','Larsen','Cohen','Levi','Friedman','Katz'];
+const pick = a => a[Math.random() * a.length | 0];
+function randomName(words){
+  const parts = [];
+  for (let i = 0; i < words - 1; i++) parts.push(pick(FIRST));
+  parts.push(pick(LAST));
+  return parts.join(' ');
+}
+$('rareBtn').onclick = () => {
+  const a = $('cA').value.trim(), b = $('cB').value.trim();
+  if (!a || !b) { $('rareOut').innerHTML = '<span class="muted">Fill both boxes first.</span>'; return; }
+  const ta = compute(a), matchCount = x => compute(x).filter((r,i) => r.total && r.total === ta[i].total).length;
+  const k = matchCount(b), words = Math.max(2, b.split(/\s+/).length), N = 20000, hist = Array(CIPHERS.length + 1).fill(0);
+  const t = performance.now();
+  for (let i = 0; i < N; i++) hist[matchCount(randomName(words))]++;
+  const atLeast = hist.slice(k).reduce((x,y)=>x+y,0), ms = (performance.now()-t).toFixed(0);
+  const odds = atLeast ? `about 1 in ${Math.round(N/atLeast).toLocaleString()}` : `fewer than 1 in ${N.toLocaleString()}`;
+  $('rareOut').innerHTML = `<p><b>${b.replace(/</g,'&lt;')}</b> matches <b>${a.replace(/</g,'&lt;')}</b> in <b>${k}</b> cipher${k===1?'':'s'}. Random ${words}-word names reach ${k}+ matches <b>${atLeast}</b> times out of ${N.toLocaleString()} (${odds}). <span class="muted">${ms}ms</span></p>
+  <table><thead><tr><th>Matching ciphers</th>${hist.map((_,i)=>`<th>${i}</th>`).join('')}</tr></thead>
+  <tbody><tr><td>Random names</td>${hist.map((h,i)=>`<td class="${i>=k?'num':''}">${h.toLocaleString()}</td>`).join('')}</tr></tbody></table>
+  <p class="muted">Simple and English Gematria always match together, so a count of 2 can be a single coincidence.</p>`;
+};
 renderCompare();
 
 const LISTS = {
@@ -209,6 +242,8 @@ function mfEntries(){
   if (on.includes('unames')) withThe(UNHOLY_EPITHETS).forEach(e => { out.push([e, 'unholy title']); UNHOLY_NAMES.forEach(h => out.push([h+' '+e, 'unholy combo'])); });
   if (on.includes('judge')) { JUDGE_PHRASES.forEach(p => out.push([p, 'judgment'])); JUDGES.forEach(j => JUDGE_VERBS.forEach(v => JUDGED.forEach(d => out.push([j+' '+v+' '+d, 'judgment'])))); }
   if (on.includes('phrases')) for (const [cat, ps] of Object.entries(PHRASES)) ps.flatMap(pronounVariants).forEach(p => out.push([p, cat]));
+  const extra = window.EXTRA_PHRASES || {};
+  for (const [cat, ps] of Object.entries(extra)) if (on.includes('x:' + cat.split(':')[0])) ps.forEach(p => out.push([p, cat]));
   if (on.includes('combos')) TITLES.forEach(t => LISTS.nations.forEach(n => out.push([t+' '+n, 'combo'])));
   if (on.includes('custom')) $('mfCustom').value.split('\n').map(s=>s.trim()).filter(Boolean).forEach(p => out.push([p, 'mine']));
   const seen = new Set();
@@ -231,8 +266,19 @@ function renderMatches(){
   const esc = s => s.replace(/</g,'&lt;');
   $('mfOut').innerHTML = rows.map(r => `<tr><td>${esc(r.p)}</td><td class="muted">${r.list}</td><td>${r.hits.map(h=>`<span class="badge part">${h.name.split(' (')[0]} ${h.total}</span>`).join(' ')}</td><td class="num">${r.hits.length}</td></tr>`).join('') || '<tr><td colspan="4" class="muted">No exact matches.</td></tr>';
 }
+$('mfResearch').innerHTML = [...new Set(Object.keys(window.EXTRA_PHRASES || {}).map(c => c.split(':')[0]))]
+  .map(g => `<label><input type="checkbox" value="x:${g}" checked> ${g}</label>`).join('');
 $('mf').oninput = $('mfCustom').oninput = $('mfOpts').onchange = renderMatches;
 $('mfMin').onchange = renderMatches;
+$('mfRare').onclick = () => {
+  const q = $('mf').value.trim(); if (!q) return;
+  const min = +$('mfMin').value, words = Math.max(2, q.split(/\s+/).length);
+  const tot = mfEntries().map(([p]) => compute(p).map(r => r.total));
+  const count = x => { const m = compute(x).map(r => r.total); let n = 0; for (const t of tot) { let k = 0; for (let i = 0; i < m.length; i++) if (m[i] && m[i] === t[i]) k++; if (k >= min) n++; } return n; };
+  const mine = count(q), N = 300, rs = Array.from({length: N}, () => count(randomName(words)));
+  const avg = rs.reduce((a,b)=>a+b,0) / N, asMany = rs.filter(r => r >= mine).length;
+  $('mfRareOut').innerHTML = `<b>${q.replace(/</g,'&lt;')}</b>: <b>${mine}</b> phrases with ${min}+ matching ciphers. Random ${words}-word names average <b>${avg.toFixed(1)}</b>; ${asMany} of ${N} got ${mine} or more.`;
+};
 
 const persist = () => { try { localStorage.setItem('gem-hist', JSON.stringify(history)); } catch {} };
 
