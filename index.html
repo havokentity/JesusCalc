@@ -198,7 +198,7 @@ const PHRASES = {
   'Trial & victim': ['The Hard Road Be Traveled','The Hard Road Traveled','Hard Road to Travel','The Narrow Road','The Narrow Way','Shes the Real Victim','She Is the Real Victim','The Real Victim','Innocent Victim','She Was the Victim'],
 };
 // she -> he / they variants for the personal phrases
-const pronounVariants = p => /\bshes?\b/i.test(p) ? [p, p.replace(/\bShes\b/g,'Hes').replace(/\bShe\b/g,'He'), p.replace(/\bShes\b/g,'Theyre').replace(/\bShe Is\b/g,'They Are').replace(/\bShe\b/g,'They')] : [p];
+const pronounVariants = p => /\bshes?\b/i.test(p) ? [p, p.replace(/\bShes\b/g,'Hes').replace(/\bShe\b/g,'He'), p.replace(/\bShes\b/g,'Theyre').replace(/\bShe Is\b/g,'They Are').replace(/\bShe\b/g,'They').replace(/\bThey Gets\b/g,'They Get').replace(/\bThey Was\b/g,'They Were')] : [p];
 // every title with and without a leading "the"
 const withThe = list => [...new Set(list.flatMap(e => /^the /i.test(e) ? [e, e.slice(4)] : [e, 'the '+e]))];
 
