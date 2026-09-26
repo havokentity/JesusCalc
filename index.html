@@ -88,6 +88,8 @@ h2{font-size:16px;margin:0 0 10px}
     <label><input type="checkbox" value="unholy" checked> Unholy names</label>
     <label><input type="checkbox" value="nations" checked> Nations</label>
     <label><input type="checkbox" value="combos"> Title + nation combos</label>
+    <label><input type="checkbox" value="names" checked> Holy name + title combos</label>
+    <label>Min ciphers <select id="mfMin"><option>1</option><option selected>2</option><option>3</option><option>4</option></select></label>
     <label><input type="checkbox" value="custom"> My list</label>
   </div>
   <textarea id="mfCustom" rows="3" placeholder="My list: one name per line" style="display:none;width:100%;margin-top:10px;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit"></textarea>
@@ -174,10 +176,13 @@ const LISTS = {
   nations: ['Israel','Judah','Babylon','Egypt','Assyria','Persia','Greece','Rome','Edom','Moab','Gog','Magog','America','United States','England','Britain','France','Germany','Russia','China','India','Iran','Iraq','Syria','Turkey','Italy','Spain','Japan','Europe','Vatican','Jerusalem','Zion'],
 };
 const TITLES = ['King of','Prince of','Lord of','Beast of','Savior of','Light of'];
+const HOLY_NAMES = ['Jesus','Jesus Christ','Christ','Lord Jesus','Yeshua','Messiah','Jesus the Christ','Jesus of Nazareth'];
+const EPITHETS = ['Son of David','Son of God','Son of Man','Son of Mary','Son of Joseph','King of Kings','Lord of Lords','King of the Jews','King of Israel','King of Glory','Lamb of God','Lion of Judah','Word of God','Light of the World','Bread of Life','Prince of Peace','Alpha and Omega','the Good Shepherd','the Messiah','the Savior','the Redeemer','the Lord','our Lord','our Savior','the Son of God','the Holy One','the Way the Truth and the Life','the Resurrection and the Life','Almighty','Emmanuel'];
 
 function mfEntries(){
   const on = [...document.querySelectorAll('#mfOpts input:checked')].map(i => i.value), out = [];
   for (const k of ['holy','unholy','nations']) if (on.includes(k)) LISTS[k].forEach(p => out.push([p, k]));
+  if (on.includes('names')) HOLY_NAMES.forEach(h => EPITHETS.forEach(e => { if (!e.startsWith(h)) out.push([h+' '+e, 'name combo']); }));
   if (on.includes('combos')) TITLES.forEach(t => LISTS.nations.forEach(n => out.push([t+' '+n, 'combo'])));
   if (on.includes('custom')) $('mfCustom').value.split('\n').map(s=>s.trim()).filter(Boolean).forEach(p => out.push([p, 'mine']));
   return out;
@@ -191,7 +196,7 @@ function renderMatches(){
   let tried = 0;
   for (const [p, list] of mfEntries()) {
     const hits = compute(p).filter((r,i) => { const ok = r.total && mine[i].total; if (ok) tried++; return ok && r.total === mine[i].total; });
-    if (hits.length) rows.push({p, list, hits});
+    if (hits.length >= +$('mfMin').value) rows.push({p, list, hits});
   }
   rows.sort((a,b) => b.hits.length - a.hits.length);
   const n = rows.reduce((a,r)=>a+r.hits.length,0);
@@ -200,6 +205,7 @@ function renderMatches(){
   $('mfOut').innerHTML = rows.map(r => `<tr><td>${esc(r.p)}</td><td class="muted">${r.list}</td><td>${r.hits.map(h=>`<span class="badge part">${h.name.split(' (')[0]} ${h.total}</span>`).join(' ')}</td><td class="num">${r.hits.length}</td></tr>`).join('') || '<tr><td colspan="4" class="muted">No exact matches.</td></tr>';
 }
 $('mf').oninput = $('mfCustom').oninput = $('mfOpts').onchange = renderMatches;
+$('mfMin').onchange = renderMatches;
 
 const persist = () => { try { localStorage.setItem('gem-hist', JSON.stringify(history)); } catch {} };
 
