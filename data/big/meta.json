@@ -1,0 +1,27 @@
+{
+ "count": 1246847,
+ "sources": {
+  "words": 370079,
+  "wordnet": 62950,
+  "books": 813818
+ },
+ "shards": [
+  {
+   "cipher": 0,
+   "bucket": 25
+  },
+  {
+   "cipher": 1,
+   "bucket": 1
+  },
+  {
+   "cipher": 4,
+   "bucket": 25
+  },
+  {
+   "cipher": 5,
+   "bucket": 25
+  }
+ ],
+ "built": "2026-09-29"
+}
