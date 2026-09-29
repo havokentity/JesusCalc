@@ -104,7 +104,7 @@ h2{font-size:16px;margin:0 0 10px}
   </div>
   <textarea id="mfCustom" rows="3" placeholder="My list: one name per line" style="display:none;width:100%;margin-top:10px;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit"></textarea>
   <p class="muted" id="mfStats"></p>
-  <div class="row" style="align-items:center"><button id="mfRare">Compare with random names</button><span class="muted">Runs 300 random names with the same word count through the same lists.</span></div>
+  <div class="row" style="align-items:center"><button id="mfRare">Compare with random names</button><span class="muted">Runs 2,000 random names with the same word count through the same lists.</span></div>
   <p id="mfRareOut"></p>
   <table>
     <thead><tr><th>Phrase</th><th>List</th><th>Matching ciphers</th><th>Count</th></tr></thead>
@@ -301,37 +301,89 @@ const pronounVariants = p => /\bshes?\b/i.test(p) ? [p, p.replace(/\bShes\b/g,'H
 // every title with and without a leading "the"
 const withThe = list => [...new Set(list.flatMap(e => /^the /i.test(e) ? [e, e.slice(4)] : [e, 'the '+e]))];
 
-function mfEntries(){
-  const on = [...document.querySelectorAll('#mfOpts input:checked')].map(i => i.value), out = [];
-  for (const k of ['holy','unholy','nations']) if (on.includes(k)) LISTS[k].forEach(p => out.push([p, k]));
-  if (on.includes('names')) withThe(EPITHETS).forEach(e => { out.push([e, 'holy title']); HOLY_NAMES.forEach(h => { if (!e.startsWith(h)) out.push([h+' '+e, 'name combo']); }); });
-  if (on.includes('unames')) withThe(UNHOLY_EPITHETS).forEach(e => { out.push([e, 'unholy title']); UNHOLY_NAMES.forEach(h => out.push([h+' '+e, 'unholy combo'])); });
-  if (on.includes('judge')) { JUDGE_PHRASES.forEach(p => out.push([p, 'judgment'])); JUDGES.forEach(j => JUDGE_VERBS.forEach(v => JUDGED.forEach(d => out.push([j+' '+v+' '+d, 'judgment'])))); }
-  if (on.includes('phrases')) vesselPhrases().forEach(p => out.push([p, 'Vessel']));
-  if (on.includes('phrases')) for (const [cat, ps] of Object.entries(PHRASES)) ps.flatMap(pronounVariants).forEach(p => out.push([p, cat]));
-  const extra = window.EXTRA_PHRASES || {};
-  for (const [cat, ps] of Object.entries(extra)) if (on.includes('x:' + cat.split(':')[0])) ps.forEach(p => out.push([p, cat]));
-  if (on.includes('combos')) TITLES.forEach(t => LISTS.nations.forEach(n => out.push([t+' '+n, 'combo'])));
-  if (on.includes('custom')) $('mfCustom').value.split('\n').map(s=>s.trim()).filter(Boolean).forEach(p => out.push([p, 'mine']));
-  const seen = new Set();
-  return out.filter(([p]) => { const k = p.toLowerCase(); return !seen.has(k) && seen.add(k); });
+// Every built-in list, each tagged with the checkbox ("opt") that enables it.
+function allEntries(){
+  const out = [], add = (p, list, opt) => out.push([p, list, opt]);
+  for (const k of ['holy','unholy','nations']) LISTS[k].forEach(p => add(p, k, k));
+  withThe(EPITHETS).forEach(e => { add(e, 'holy title', 'names'); HOLY_NAMES.forEach(h => { if (!e.startsWith(h)) add(h+' '+e, 'name combo', 'names'); }); });
+  withThe(UNHOLY_EPITHETS).forEach(e => { add(e, 'unholy title', 'unames'); UNHOLY_NAMES.forEach(h => add(h+' '+e, 'unholy combo', 'unames')); });
+  JUDGE_PHRASES.forEach(p => add(p, 'judgment', 'judge'));
+  JUDGES.forEach(j => JUDGE_VERBS.forEach(v => JUDGED.forEach(d => add(j+' '+v+' '+d, 'judgment', 'judge'))));
+  vesselPhrases().forEach(p => add(p, 'Vessel', 'phrases'));
+  for (const [cat, ps] of Object.entries(PHRASES)) ps.flatMap(pronounVariants).forEach(p => add(p, cat, 'phrases'));
+  for (const [cat, ps] of Object.entries(window.EXTRA_PHRASES || {})) ps.forEach(p => add(p, cat, 'x:' + cat.split(':')[0]));
+  TITLES.forEach(t => LISTS.nations.forEach(n => add(t+' '+n, 'combo', 'combos')));
+  return out;
 }
 
+// Hash-map index: for each cipher, total -> ids of phrases with that total.
+// Built once; a search is then a handful of map lookups instead of a full scan.
+let IDX = null;
+function getIndex(){
+  if (IDX) return IDX;
+  const byKey = new Map(), phrases = [], lists = [], opts = [];
+  for (const [p, list, opt] of allEntries()) {
+    const k = p.toLowerCase();
+    let id = byKey.get(k);
+    if (id === undefined) { id = phrases.length; byKey.set(k, id); phrases.push(p); lists.push(list); opts.push(new Set()); }
+    opts[id].add(opt);
+  }
+  const C = CIPHERS.length, maps = Array.from({length: C}, () => new Map());
+  phrases.forEach((p, id) => compute(p).forEach((r, i) => {
+    if (!r.total) return;
+    const m = maps[i]; let a = m.get(r.total);
+    if (!a) m.set(r.total, a = []);
+    a.push(id);
+  }));
+  return IDX = {phrases, lists, opts, maps};
+}
+
+const enabledOpts = () => new Set([...document.querySelectorAll('#mfOpts input:checked')].map(i => i.value));
+const customList = () => document.querySelector('#mfOpts input[value=custom]').checked
+  ? $('mfCustom').value.split('\n').map(s => s.trim()).filter(Boolean) : [];
+
+// Kept for compatibility: the currently enabled phrases as [phrase, list].
+function mfEntries(){
+  const idx = getIndex(), on = enabledOpts(), out = [];
+  idx.phrases.forEach((p, id) => { if ([...idx.opts[id]].some(o => on.has(o))) out.push([p, idx.lists[id]]); });
+  customList().forEach(p => out.push([p, 'mine']));
+  return out;
+}
+
+// Phrases sharing at least `min` cipher totals with `totals`, as [{p, list, hits:[cipher index]}].
+function findMatches(totals, min, on, custom){
+  const idx = getIndex(), counts = new Map();
+  totals.forEach((t, i) => {
+    if (!t) return;
+    for (const id of idx.maps[i].get(t) || []) {
+      let c = counts.get(id);
+      if (!c) counts.set(id, c = []);
+      c.push(i);
+    }
+  });
+  const rows = [];
+  for (const [id, hits] of counts)
+    if (hits.length >= min && [...idx.opts[id]].some(o => on.has(o))) rows.push({p: idx.phrases[id], list: idx.lists[id], hits});
+  for (const p of custom) {
+    const hits = [];
+    compute(p).forEach((r, i) => { if (r.total && r.total === totals[i]) hits.push(i); });
+    if (hits.length >= min) rows.push({p, list: 'mine', hits});
+  }
+  return rows;
+}
+
+const MAX_ROWS = 500;
 function renderMatches(){
   $('mfCustom').style.display = document.querySelector('#mfOpts input[value=custom]').checked ? 'block' : 'none';
   const q = $('mf').value.trim();
   if (!q) { $('mfOut').innerHTML = ''; $('mfStats').textContent = ''; return; }
-  const mine = compute(q), rows = [];
-  let tried = 0;
-  for (const [p, list] of mfEntries()) {
-    const hits = compute(p).filter((r,i) => { const ok = r.total && mine[i].total; if (ok) tried++; return ok && r.total === mine[i].total; });
-    if (hits.length >= +$('mfMin').value) rows.push({p, list, hits});
-  }
+  const t0 = performance.now(), mine = compute(q), totals = mine.map(r => r.total);
+  const rows = findMatches(totals, +$('mfMin').value, enabledOpts(), customList());
   rows.sort((a,b) => b.hits.length - a.hits.length);
-  const n = rows.reduce((a,r)=>a+r.hits.length,0);
-  $('mfStats').textContent = `${n} matches out of ${tried} cipher comparisons (${tried ? (100*n/tried).toFixed(1) : 0}%). Tip: try a random name too; with many ciphers and long lists, some matches happen by chance.`;
+  const ms = (performance.now() - t0).toFixed(1);
+  $('mfStats').textContent = `${rows.length.toLocaleString()} phrases match in ${$('mfMin').value}+ ciphers, out of ${getIndex().phrases.length.toLocaleString()} indexed (${ms}ms).${rows.length > MAX_ROWS ? ` Showing the top ${MAX_ROWS}.` : ''} Tip: compare with random names; with many lists some matches happen by chance.`;
   const esc = s => s.replace(/</g,'&lt;');
-  $('mfOut').innerHTML = rows.map(r => `<tr><td>${esc(r.p)}${noteFor(r.p) ? `<br><span class="muted" style="white-space:normal;font-size:12px">(${esc(noteFor(r.p))})</span>` : ''}</td><td class="muted">${r.list}</td><td>${r.hits.map(h=>`<span class="badge part">${h.name.split(' (')[0]} ${h.total}</span>`).join(' ')}</td><td class="num">${r.hits.length}</td></tr>`).join('') || '<tr><td colspan="4" class="muted">No exact matches.</td></tr>';
+  $('mfOut').innerHTML = rows.slice(0, MAX_ROWS).map(r => `<tr><td>${esc(r.p)}${noteFor(r.p) ? `<br><span class="muted" style="white-space:normal;font-size:12px">(${esc(noteFor(r.p))})</span>` : ''}</td><td class="muted">${r.list}</td><td>${r.hits.map(i=>`<span class="badge part">${CIPHERS[i].name.split(' (')[0]} ${totals[i]}</span>`).join(' ')}</td><td class="num">${r.hits.length}</td></tr>`).join('') || '<tr><td colspan="4" class="muted">No exact matches.</td></tr>';
 }
 $('mfResearch').innerHTML = [...new Set(Object.keys(window.EXTRA_PHRASES || {}).map(c => c.split(':')[0]))]
   .map(g => `<label><input type="checkbox" value="x:${g}" checked> ${g}</label>`).join('');
@@ -339,12 +391,11 @@ $('mf').oninput = $('mfCustom').oninput = $('mfOpts').onchange = renderMatches;
 $('mfMin').onchange = renderMatches;
 $('mfRare').onclick = () => {
   const q = $('mf').value.trim(); if (!q) return;
-  const min = +$('mfMin').value, words = Math.max(2, q.split(/\s+/).length);
-  const tot = mfEntries().map(([p]) => compute(p).map(r => r.total));
-  const count = x => { const m = compute(x).map(r => r.total); let n = 0; for (const t of tot) { let k = 0; for (let i = 0; i < m.length; i++) if (m[i] && m[i] === t[i]) k++; if (k >= min) n++; } return n; };
-  const mine = count(q), N = 300, rs = Array.from({length: N}, () => count(randomName(words)));
+  const min = +$('mfMin').value, words = Math.max(2, q.split(/\s+/).length), on = enabledOpts(), custom = customList();
+  const count = x => findMatches(compute(x).map(r => r.total), min, on, custom).length;
+  const t0 = performance.now(), mine = count(q), N = 2000, rs = Array.from({length: N}, () => count(randomName(words)));
   const avg = rs.reduce((a,b)=>a+b,0) / N, asMany = rs.filter(r => r >= mine).length;
-  $('mfRareOut').innerHTML = `<b>${q.replace(/</g,'&lt;')}</b>: <b>${mine}</b> phrases with ${min}+ matching ciphers. Random ${words}-word names average <b>${avg.toFixed(1)}</b>; ${asMany} of ${N} got ${mine} or more.`;
+  $('mfRareOut').innerHTML = `<b>${q.replace(/</g,'&lt;')}</b>: <b>${mine}</b> phrases with ${min}+ matching ciphers. Random ${words}-word names average <b>${avg.toFixed(1)}</b>; ${asMany.toLocaleString()} of ${N.toLocaleString()} got ${mine} or more. <span class="muted">${(performance.now()-t0).toFixed(0)}ms</span>`;
 };
 
 const persist = () => { try { localStorage.setItem('gem-hist', JSON.stringify(history)); } catch {} };
