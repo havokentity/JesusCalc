@@ -231,6 +231,11 @@ const PHRASES = {
   'Bride': ['Jealous of Me Real Bride','Jealous of Me the Real Bride','Jealous of Me True Bride','Jealous of the Real Bride','Jealous of the True Bride','Jealous of Real Bride','Jealous of Her Real Bride','Jealous of His Real Bride','Jealous of My Real Bride','Jealous of Me Real Groom','Jealous of Me Real Husband','Jealous of Me Real Wife','Envious of Me Real Bride','Envious of the Real Bride','Jealousy of the Real Bride','They Are Jealous of the Real Bride','They Are Jealous of Me','She Is Jealous of the Real Bride','She Is the Real Bride','Shes the Real Bride','She Is the True Bride','I Am the Real Bride','The Real Bride','The True Bride','Real Bride of Christ','True Bride of Christ','The Bride of Christ','The Bride of the Lamb','The Chosen Bride','The Rightful Bride','The False Bride','Jealous of the Bride of Christ'],
   'Trial & victim': ['The Hard Road Be Traveled','The Hard Road Traveled','Hard Road to Travel','The Narrow Road','The Narrow Way','Shes the Real Victim','She Is the Real Victim','The Real Victim','Innocent Victim','She Was the Victim'],
 };
+// "Being Christ Vessel" and variations across deities / entities
+const VESSEL_ENTITIES = ['Christ','Jesus','Jesus Christ','God','the Lord','the Holy Spirit','Yahweh','the Messiah','the Most High','Michael','Gabriel','Metatron','Sophia','Lucifer','Satan','the Devil','the Antichrist','the Beast','Baphomet','Babalon','Shiva','Vishnu','Krishna','Kali','Brahma','the Buddha','Maitreya','Allah','the Mahdi','Osiris','Horus','Isis','Ra','Thoth','Zeus','Apollo','Dionysus','Odin','Loki','Marduk','Baal','Mithras','Quetzalcoatl','the Divine','the Spirit'];
+const VESSEL_FORMS = ['Being {e} Vessel','Being the {e} Vessel','Being a {e} Vessel','{e} Vessel','The {e} Vessel','Vessel of {e}','The Vessel of {e}','Being the Vessel of {e}','Being a Vessel of {e}','Being a Vessel for {e}','Chosen Vessel of {e}','Being {e}s Vessel','Being {e} Temple','Being {e} Channel','Being {e} Host','Being {e} Instrument','Being {e} Avatar','Being {e} Incarnate'];
+const vesselPhrases = () => VESSEL_ENTITIES.flatMap(e => VESSEL_FORMS.map(f =>
+  f.replace('{e}', e).replace(/\b(the|a) the /gi, '$1 ')));
 // she -> he / they variants for the personal phrases
 const pronounVariants = p => /\bshes?\b/i.test(p) ? [p, p.replace(/\bShes\b/g,'Hes').replace(/\bShe\b/g,'He'), p.replace(/\bShes\b/g,'Theyre').replace(/\bShe Is\b/g,'They Are').replace(/\bShe\b/g,'They').replace(/\bThey Gets\b/g,'They Get').replace(/\bThey Was\b/g,'They Were')] : [p];
 // every title with and without a leading "the"
@@ -242,6 +247,7 @@ function mfEntries(){
   if (on.includes('names')) withThe(EPITHETS).forEach(e => { out.push([e, 'holy title']); HOLY_NAMES.forEach(h => { if (!e.startsWith(h)) out.push([h+' '+e, 'name combo']); }); });
   if (on.includes('unames')) withThe(UNHOLY_EPITHETS).forEach(e => { out.push([e, 'unholy title']); UNHOLY_NAMES.forEach(h => out.push([h+' '+e, 'unholy combo'])); });
   if (on.includes('judge')) { JUDGE_PHRASES.forEach(p => out.push([p, 'judgment'])); JUDGES.forEach(j => JUDGE_VERBS.forEach(v => JUDGED.forEach(d => out.push([j+' '+v+' '+d, 'judgment'])))); }
+  if (on.includes('phrases')) vesselPhrases().forEach(p => out.push([p, 'Vessel']));
   if (on.includes('phrases')) for (const [cat, ps] of Object.entries(PHRASES)) ps.flatMap(pronounVariants).forEach(p => out.push([p, cat]));
   const extra = window.EXTRA_PHRASES || {};
   for (const [cat, ps] of Object.entries(extra)) if (on.includes('x:' + cat.split(':')[0])) ps.forEach(p => out.push([p, cat]));
