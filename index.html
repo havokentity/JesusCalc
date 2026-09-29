@@ -50,6 +50,7 @@ h2{font-size:16px;margin:0 0 10px}
     <button id="save">Add to history</button>
     <button class="ghost" id="clear">Clear</button>
   </div>
+  <p class="muted" id="qNote" style="margin:8px 0 0"></p>
   <div class="kbd" id="heKbd"></div>
   <div class="kbd" id="grKbd"></div>
 </div>
@@ -160,6 +161,8 @@ const $ = id => document.getElementById(id);
 const compute = s => CIPHERS.map(c => { const [script, p] = c.run(s); return {name:c.name, script, p, total:p.reduce((a,[,v])=>a+v,0)}; });
 
 function render(){
+  const n = typeof noteFor === 'function' ? noteFor($('q').value) : '';
+  $('qNote').textContent = n ? '(' + n + ')' : '';
   const s = $('q').value, res = compute(s);
   $('results').innerHTML = res.map((r,i)=>`<tr data-i="${i}" class="${i===selected?'sel':''}"><td>${r.name}</td><td class="muted">${r.p.length?r.script:'—'}</td><td class="num">${r.total}</td><td>${r.total?reduce(r.total):0}</td><td>${r.p.length}</td></tr>`).join('');
   const r = res[selected];
@@ -254,6 +257,45 @@ const VESSEL_ENTITIES = ['Christ','Jesus','Jesus Christ','God','the Lord','the H
 const VESSEL_FORMS = ['Being {e} Vessel','Being the {e} Vessel','Being a {e} Vessel','{e} Vessel','The {e} Vessel','Vessel of {e}','The Vessel of {e}','Being the Vessel of {e}','Being a Vessel of {e}','Being a Vessel for {e}','Chosen Vessel of {e}','Being {e}s Vessel','Being {e} Temple','Being {e} Channel','Being {e} Host','Being {e} Instrument','Being {e} Avatar','Being {e} Incarnate'];
 const vesselPhrases = () => VESSEL_ENTITIES.flatMap(e => VESSEL_FORMS.map(f =>
   f.replace('{e}', e).replace(/\b(the|a) the /gi, '$1 ')));
+// short explanations shown next to obscure phrases (kept separate so they don't change totals)
+const NOTES = {
+ "Decode NRWN QSR": "NRWN QSR is \"Nero Caesar\" in Hebrew letters (נרון קסר), which totals 666 — the classic reading of Revelation 13:18",
+ "Decode NRWNQSR": "NRWN QSR is \"Nero Caesar\" in Hebrew letters (נרון קסר), which totals 666",
+ "NRWN QSR": "\"Nero Caesar\" transliterated into Hebrew letters; totals 666 in Hebrew gematria",
+ "נרון קסר": "\"Nero Caesar\" in Hebrew letters (Neron Qesar); totals 666",
+ "נרו קסר": "\"Nero Caesar\" without the final N (Latin spelling); totals 616, the variant number in some early Revelation manuscripts",
+ "Neron Kaisar": "Greek form of \"Nero Caesar\"; its Hebrew spelling totals 666",
+ "Neron Qesar": "Hebrew form of \"Nero Caesar\"; totals 666",
+ "Nero Caesar": "Roman emperor (54–68 AD); his name in Hebrew letters totals 666",
+ "Nero Caesar Six Six Six": "Nero Caesar in Hebrew letters totals 666 (Revelation 13:18)",
+ "Dracone Bona Dividebant": "Latin: \"they were dividing the goods with the dragon\"",
+ "In Hoc Signo Vinces": "Latin: \"In this sign you will conquer\" — Constantine's vision of the cross, 312 AD",
+ "Jeppesen Terminal": "Main terminal of Denver International Airport, known for conspiracy lore about its murals",
+ "The Jeppesen Terminal": "Main terminal of Denver International Airport",
+ "I Am Project Monarch": "Project Monarch: alleged CIA mind-control program — conspiracy lore, not documented",
+ "Project Monarch Survivor": "Project Monarch: alleged CIA mind-control program — conspiracy lore",
+ "Akhenaten Dead Forever": "Akhenaten: Egyptian pharaoh (c. 1353–1336 BC) who imposed worship of the sun disk Aten",
+ "Element Wasser": "Wasser is German for \"water\"",
+ "Parietal Power": "Parietal lobe: brain region for sensation and spatial awareness",
+ "Forty One Months": "Revelation 13:5 gives the beast forty-two months",
+ "Forty Two Months": "Revelation 13:5 — the beast's reign; equals 1,260 days or 3½ years",
+ "Twelve Hundred Sixty Days": "Revelation 11:3 and 12:6 — equals forty-two months",
+ "Time Times and Half a Time": "Daniel 7:25 and Revelation 12:14 — read as 3½ years",
+ "One Five Three": "153: the number of fish caught in John 21:11",
+ "One Five Three Fish": "John 21:11 — the disciples catch 153 fish",
+ "One Hundred Fifty Three Fish": "John 21:11 — the disciples catch 153 fish",
+ "Gad Zooks or Gadzooks": "Gadzooks: old mild oath, probably from \"God's hooks\" (the nails of the cross)",
+ "Gadzooks": "Old mild oath, probably from \"God's hooks\" (the nails of the cross)",
+ "Pissflaps Dawn": "Pissflaps: British slang, crude",
+ "Babylonian Talmud": "Main compilation of Jewish law and commentary, completed c. 500 AD",
+ "Babylonian Talmudism": "Talmud: main compilation of Jewish law; \"Talmudism\" is often used as a pejorative",
+ "Get Down Moses": "Echoes \"Go Down Moses\", the spiritual about the Exodus",
+ "Go Down Moses": "African-American spiritual about the Exodus (Exodus 5:1)",
+ "Let My People Go": "Exodus 5:1 — Moses' demand to Pharaoh",
+ "Awareness of NPC": "NPC: \"non-player character\", slang for people seen as acting without independent thought",
+ "Pinkie Pie Le Dijo Smile": "Spanish/English mix: \"Pinkie Pie told her Smile\" (My Little Pony)"
+};
+const noteFor = p => NOTES[Object.keys(NOTES).find(k => k.toLowerCase() === p.trim().toLowerCase())] || '';
 // she -> he / they variants for the personal phrases
 const pronounVariants = p => /\bshes?\b/i.test(p) ? [p, p.replace(/\bShes\b/g,'Hes').replace(/\bShe\b/g,'He'), p.replace(/\bShes\b/g,'Theyre').replace(/\bShe Is\b/g,'They Are').replace(/\bShe\b/g,'They').replace(/\bThey Gets\b/g,'They Get').replace(/\bThey Was\b/g,'They Were')] : [p];
 // every title with and without a leading "the"
@@ -289,7 +331,7 @@ function renderMatches(){
   const n = rows.reduce((a,r)=>a+r.hits.length,0);
   $('mfStats').textContent = `${n} matches out of ${tried} cipher comparisons (${tried ? (100*n/tried).toFixed(1) : 0}%). Tip: try a random name too; with many ciphers and long lists, some matches happen by chance.`;
   const esc = s => s.replace(/</g,'&lt;');
-  $('mfOut').innerHTML = rows.map(r => `<tr><td>${esc(r.p)}</td><td class="muted">${r.list}</td><td>${r.hits.map(h=>`<span class="badge part">${h.name.split(' (')[0]} ${h.total}</span>`).join(' ')}</td><td class="num">${r.hits.length}</td></tr>`).join('') || '<tr><td colspan="4" class="muted">No exact matches.</td></tr>';
+  $('mfOut').innerHTML = rows.map(r => `<tr><td>${esc(r.p)}${noteFor(r.p) ? `<br><span class="muted" style="white-space:normal;font-size:12px">(${esc(noteFor(r.p))})</span>` : ''}</td><td class="muted">${r.list}</td><td>${r.hits.map(h=>`<span class="badge part">${h.name.split(' (')[0]} ${h.total}</span>`).join(' ')}</td><td class="num">${r.hits.length}</td></tr>`).join('') || '<tr><td colspan="4" class="muted">No exact matches.</td></tr>';
 }
 $('mfResearch').innerHTML = [...new Set(Object.keys(window.EXTRA_PHRASES || {}).map(c => c.split(':')[0]))]
   .map(g => `<label><input type="checkbox" value="x:${g}" checked> ${g}</label>`).join('');
