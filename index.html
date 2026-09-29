@@ -93,15 +93,17 @@ h2{font-size:16px;margin:0 0 10px}
     <label><input type="checkbox" value="holy" checked> Holy names</label>
     <label><input type="checkbox" value="unholy" checked> Unholy names</label>
     <label><input type="checkbox" value="nations" checked> Nations</label>
-    <label><input type="checkbox" value="combos"> Title + nation combos</label>
+    <label><input type="checkbox" value="combos" checked> Title + nation combos</label>
     <label><input type="checkbox" value="names" checked> Holy name + title combos</label>
     <label><input type="checkbox" value="unames" checked> Unholy name + title combos</label>
     <label><input type="checkbox" value="judge" checked> God judging the devil</label>
     <label><input type="checkbox" value="phrases" checked> Your phrases</label>
-    <label><input type="checkbox" value="big" checked> <span id="bigLabel">Big dictionary</span></label>
+    <label><input type="checkbox" value="bigPhrases" checked> <span id="bigPhrasesLabel">Dictionary phrases</span></label>
+    <label><input type="checkbox" value="bigWords"> <span id="bigWordsLabel">Dictionary single words</span></label>
     <span id="mfResearch" class="row" style="gap:10px"></span>
-    <label>Min ciphers <select id="mfMin"><option>1</option><option selected>2</option><option>3</option><option>4</option></select></label>
-    <label><input type="checkbox" value="custom"> My list</label>
+    <label>Min ciphers <select id="mfMin"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option></select></label>
+    <label>Always on top <select id="mfPromote"><option value="99">off</option><option value="3">3+ ciphers</option><option value="4" selected>4+ ciphers</option><option value="5">5+ ciphers</option></select></label>
+    <label><input type="checkbox" value="custom" checked> My list</label>
   </div>
   <textarea id="mfCustom" rows="3" placeholder="My list: one name per line" style="display:none;width:100%;margin-top:10px;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit"></textarea>
   <p class="muted" id="mfStats"></p>
@@ -349,7 +351,6 @@ let BIG = null;
 fetch('data/big/meta.json').then(r => r.ok ? r.json() : null).then(m => {
   if (!m) return;
   BIG = m;
-  $('bigLabel').textContent = `Big dictionary (${(m.count / 1e6).toFixed(2)}M)`;
   renderMatches();
 }).catch(() => {});
 const bigCache = new Map();
@@ -366,17 +367,19 @@ function bigShard(cipher, bucket){
   }).catch(() => []));
   return bigCache.get(url);
 }
-async function findBigMatches(totals, min){
+async function findBigMatches(totals, min, on){
   if (!BIG) return [];
   const lists = await Promise.all(BIG.shards.map(s => totals[s.cipher] ? bigShard(s.cipher, Math.floor(totals[s.cipher] / s.bucket)) : []));
   const idx = getIndex(), curated = new Set(idx.phrases.map(p => p.toLowerCase())), seen = new Set(), rows = [];
   for (const list of lists) for (const p of list) {
     const k = p.toLowerCase();
     if (seen.has(k) || curated.has(k)) continue;
+    const single = !p.includes(' ');
+    if (!on.has(single ? 'bigWords' : 'bigPhrases')) continue;
     seen.add(k);
     const hits = [];
     compute(p).forEach((r, i) => { if (r.total && r.total === totals[i]) hits.push(i); });
-    if (hits.length >= min) rows.push({p, list: 'dictionary', hits});
+    if (hits.length >= min) rows.push({p, list: single ? 'dictionary word' : 'dictionary phrase', hits, word: single});
   }
   return rows;
 }
@@ -389,16 +392,19 @@ function renderMatches(){
   if (!q) { $('mfOut').innerHTML = ''; $('mfStats').textContent = ''; return; }
   const t0 = performance.now(), totals = compute(q).map(r => r.total), min = +$('mfMin').value, on = enabledOpts();
   const rows = findMatches(totals, min, on, customList());
-  showMatches(rows, totals, min, performance.now() - t0, on.has('big') && BIG ? 'searching…' : '');
-  if (!on.has('big') || !BIG) return;
+  showMatches(rows, totals, min, performance.now() - t0, (on.has('bigWords') || on.has('bigPhrases')) && BIG ? 'searching…' : '');
+  if (!(on.has('bigWords') || on.has('bigPhrases')) || !BIG) return;
   clearTimeout(renderMatches.timer);
   renderMatches.timer = setTimeout(async () => {
-    const t1 = performance.now(), big = await findBigMatches(totals, min);
+    const t1 = performance.now(), big = await findBigMatches(totals, min, on);
     if (token === mfToken) showMatches(rows.concat(big), totals, min, performance.now() - t0, `${big.length.toLocaleString()} from the big dictionary in ${(performance.now() - t1).toFixed(0)}ms`);
   }, 250);
 }
 function showMatches(rows, totals, min, ms, bigNote){
-  rows.sort((a,b) => b.hits.length - a.hits.length);
+  // Rows with enough ciphers go to the top wherever they came from; dictionary single words
+  // otherwise sit at the bottom, below curated and dictionary phrases.
+  const promote = +$('mfPromote').value, tier = r => r.hits.length >= promote ? 0 : r.word ? 2 : 1;
+  rows.sort((a,b) => tier(a) - tier(b) || b.hits.length - a.hits.length);
   const esc = s => s.replace(/</g,'&lt;');
   $('mfStats').textContent = `${rows.length.toLocaleString()} phrases match in ${min}+ ciphers across ${getIndex().phrases.length.toLocaleString()} curated phrases${BIG ? ` + ${BIG.count.toLocaleString()} dictionary entries` : ''} (${ms.toFixed(0)}ms${bigNote ? '; ' + bigNote : ''}).${rows.length > MAX_ROWS ? ` Showing the top ${MAX_ROWS}.` : ''}`;
   $('mfOut').innerHTML = rows.slice(0, MAX_ROWS).map(r => `<tr><td>${esc(r.p)}${noteFor(r.p) ? `<br><span class="muted" style="white-space:normal;font-size:12px">(${esc(noteFor(r.p))})</span>` : ''}</td><td class="muted">${r.list}</td><td>${r.hits.map(i=>`<span class="badge part">${CIPHERS[i].name.split(' (')[0]} ${totals[i]}</span>`).join(' ')}</td><td class="num">${r.hits.length}</td></tr>`).join('') || '<tr><td colspan="4" class="muted">No exact matches.</td></tr>';
@@ -406,7 +412,7 @@ function showMatches(rows, totals, min, ms, bigNote){
 $('mfResearch').innerHTML = [...new Set(Object.keys(window.EXTRA_PHRASES || {}).map(c => c.split(':')[0]))]
   .map(g => `<label><input type="checkbox" value="x:${g}" checked> ${g}</label>`).join('');
 $('mf').oninput = $('mfCustom').oninput = $('mfOpts').onchange = renderMatches;
-$('mfMin').onchange = renderMatches;
+$('mfMin').onchange = $('mfPromote').onchange = renderMatches;
 $('mfRare').onclick = () => {
   const q = $('mf').value.trim(); if (!q) return;
   const min = +$('mfMin').value, words = Math.max(2, q.split(/\s+/).length), on = enabledOpts(), custom = customList();
