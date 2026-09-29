@@ -2,7 +2,7 @@
 
 Gematria calculator for Hebrew, English, Latin and Greek ciphers, with a match finder over about 25,000 curated phrases and a 1.25-million-entry dictionary. One codebase runs as a web app, an iOS app and an Android app.
 
-**Web app:** https://havokentity.github.io/JesusCalc/
+**Web app:** https://havokentity.github.io/letterweight/
 
 ## Features
 - **Calculate:** totals in 7 ciphers (Hebrew, Simple, Simple English, English, Latin, Greek, Isopsephy), tap a cipher for its letter breakdown, on-screen Hebrew and Greek letters, save and share
