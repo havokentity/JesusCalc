@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Letterweight</string>
+    <string name="title_activity_main">Letterweight</string>
+    <string name="package_name">com.letterweight.app</string>
+    <string name="custom_url_scheme">com.letterweight.app</string>
+</resources>

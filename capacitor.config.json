@@ -1,0 +1,11 @@
+{
+  "appId": "com.letterweight.app",
+  "appName": "Letterweight",
+  "webDir": "dist",
+  "backgroundColor": "#15130f",
+  "ios": { "contentInset": "never" },
+  "android": { "backgroundColor": "#15130f" },
+  "plugins": {
+    "StatusBar": { "overlaysWebView": true }
+  }
+}

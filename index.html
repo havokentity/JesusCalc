@@ -2,438 +2,126 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>JesusCalc Gematria</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Inter:wght@400;600&display=swap" rel="stylesheet">
-<style>
-:root{--bg:#f6f3ec;--card:#fff;--ink:#1f1b16;--muted:#6b6358;--line:#e4ddd0;--accent:#8a5a14;--accent-soft:#f3e7d2;}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15130f;--card:#1f1c17;--ink:#eee7da;--muted:#a59b8c;--line:#353027;--accent:#e0b060;--accent-soft:#3a2e1c;}}
-:root[data-theme="dark"]{--bg:#15130f;--card:#1f1c17;--ink:#eee7da;--muted:#a59b8c;--line:#353027;--accent:#e0b060;--accent-soft:#3a2e1c;}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Inter,system-ui,sans-serif}
-main{max-width:1000px;margin:0 auto;padding:24px 16px 60px}
-h1{font-family:Cinzel,serif;color:var(--accent);margin:0 0 4px;font-size:30px}
-.sub{color:var(--muted);margin:0 0 20px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:18px}
-.row{display:flex;gap:10px;flex-wrap:wrap}
-input{flex:1;min-width:200px;font-size:20px;padding:10px 14px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
-button{padding:10px 16px;border:0;border-radius:8px;background:var(--accent);color:var(--card);font-weight:600;cursor:pointer}
-button.ghost{background:transparent;color:var(--accent);border:1px solid var(--line)}
-.kbd{margin-top:10px;display:flex;flex-wrap:wrap;gap:4px}
-.kbd span{cursor:pointer;padding:3px 8px;border:1px solid var(--line);border-radius:6px;font-size:17px}
-.kbd span:hover{background:var(--accent-soft)}
-.wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse}
-th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
-th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
-.badge{display:inline-block;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:600;background:var(--accent);color:var(--card)}
-.badge.part{background:var(--accent-soft);color:var(--accent)}
-tr.match td{background:var(--accent-soft)}
-td.num{font-variant-numeric:tabular-nums;font-weight:600;color:var(--accent);font-size:18px}
-tr.sel td{background:var(--accent-soft)}
-tbody tr{cursor:pointer}
-.chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{border:1px solid var(--line);border-radius:6px;padding:4px 8px;text-align:center;min-width:42px}
-.chip b{display:block;font-size:18px}.chip small{color:var(--muted)}
-h2{font-size:16px;margin:0 0 10px}
-.muted{color:var(--muted);font-size:13px}
-</style>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f6f3ec" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15130f" media="(prefers-color-scheme: dark)">
+<meta name="description" content="Letterweight — gematria calculator for Hebrew, English, Latin and Greek ciphers, with a 1.25 million phrase match finder.">
+<title>Letterweight</title>
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-512.webp">
+<script type="module" src="/src/main.js"></script>
 </head>
 <body>
+<header class="top">
+  <h1 class="brand">Letterweight</h1>
+  <nav class="tabs" id="tabs" aria-label="Sections">
+    <button data-tab="calc">Calculate</button>
+    <button data-tab="compare">Compare</button>
+    <button data-tab="find">Find</button>
+    <button data-tab="saved">Saved</button>
+  </nav>
+  <button class="icon-btn" id="openSettings" aria-label="Settings">
+    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M12 15.5A3.5 3.5 0 1 1 12 8.5a3.5 3.5 0 0 1 0 7Zm7.43-2.53a7.8 7.8 0 0 0 0-1.94l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.61-.22l-2.39.96a7.3 7.3 0 0 0-1.68-.97l-.36-2.54a.5.5 0 0 0-.5-.42h-3.84a.5.5 0 0 0-.49.42l-.36 2.54c-.6.24-1.17.57-1.68.97l-2.39-.96a.5.5 0 0 0-.61.22L2.34 8.81a.5.5 0 0 0 .12.64l2.03 1.58a7.8 7.8 0 0 0 0 1.94l-2.03 1.58a.5.5 0 0 0-.12.64l1.92 3.32c.13.22.39.31.61.22l2.39-.96c.51.4 1.08.73 1.68.97l.36 2.54c.04.24.25.42.49.42h3.84c.25 0 .46-.18.5-.42l.36-2.54c.6-.24 1.17-.57 1.68-.97l2.39.96c.23.09.48 0 .61-.22l1.92-3.32a.5.5 0 0 0-.12-.64l-2.03-1.58Z"/></svg>
+  </button>
+</header>
+
 <main>
-<h1>Gematria Calculator</h1>
-<p class="sub">Type English, Hebrew (עברית) or Greek (Ελληνικά). Click a cipher row to see its letter breakdown.</p>
+  <!-- Calculate -->
+  <section id="calc" class="screen">
+    <div class="field">
+      <input id="q" type="search" placeholder="Type a word or phrase" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" enterkeyhint="done">
+      <button class="clear" data-clear="q" aria-label="Clear">×</button>
+    </div>
+    <div class="kbd-toggles">
+      <button class="chip-btn" data-kbd="he">א Hebrew</button>
+      <button class="chip-btn" data-kbd="gr">α Greek</button>
+    </div>
+    <div class="kbd" id="kbd" hidden></div>
+    <p class="note" id="qNote" hidden></p>
+    <ul class="cipher-list" id="results"></ul>
+    <div class="actions">
+      <button class="btn" id="saveBtn">☆ Save</button>
+      <button class="btn ghost" id="shareBtn">Share</button>
+      <button class="btn ghost" id="findBtn">Find matches →</button>
+    </div>
+  </section>
 
-<div class="card">
-  <div class="row">
-    <input id="q" placeholder="e.g. Jesus, ישוע, Ἰησοῦς" autofocus>
-    <button id="save">Add to history</button>
-    <button class="ghost" id="clear">Clear</button>
-  </div>
-  <p class="muted" id="qNote" style="margin:8px 0 0"></p>
-  <div class="kbd" id="heKbd"></div>
-  <div class="kbd" id="grKbd"></div>
-</div>
+  <!-- Compare -->
+  <section id="compare" class="screen" hidden>
+    <div class="field"><input id="cA" type="search" placeholder="First word or phrase" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false"><button class="clear" data-clear="cA" aria-label="Clear">×</button></div>
+    <div class="vs">vs</div>
+    <div class="field"><input id="cB" type="search" placeholder="Second word or phrase" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false"><button class="clear" data-clear="cB" aria-label="Clear">×</button></div>
+    <p class="summary" id="cmpSummary"></p>
+    <ul class="cmp-list" id="cmp"></ul>
+    <button class="btn wide" id="rareBtn">How rare is this?</button>
+    <p class="hint">Tests 20,000 random names shaped like the second box against the first.</p>
+    <div id="rareOut"></div>
+  </section>
 
-<div class="card wrap">
-  <table>
-    <thead><tr><th>Cipher</th><th>Script used</th><th>Total</th><th>Reduced</th><th>Letters</th></tr></thead>
-    <tbody id="results"></tbody>
-  </table>
-</div>
+  <!-- Find -->
+  <section id="find" class="screen" hidden>
+    <div class="field"><input id="mf" type="search" placeholder="Name or phrase to match" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false"><button class="clear" data-clear="mf" aria-label="Clear">×</button></div>
+    <div class="controls">
+      <div class="seg" id="mfMin" role="radiogroup" aria-label="Minimum matching ciphers">
+        <span class="seg-label">Min ciphers</span>
+        <button data-v="1">1</button><button data-v="2">2</button><button data-v="3">3</button><button data-v="4">4</button><button data-v="5">5</button>
+      </div>
+      <label class="select">On top
+        <select id="mfPromote"><option value="99">off</option><option value="3">3+</option><option value="4">4+</option><option value="5">5+</option></select>
+      </label>
+    </div>
+    <details class="lists" id="listsPanel">
+      <summary>Lists <span id="listsCount"></span></summary>
+      <div class="list-group"><h3>Core</h3><div class="checks" id="coreChecks"></div></div>
+      <div class="list-group"><h3>Research</h3><div class="checks" id="researchChecks"></div></div>
+      <div class="list-group"><h3>Dictionary</h3><div class="checks">
+        <label><input type="checkbox" data-opt="bigPhrases"> Phrases &amp; lines</label>
+        <label><input type="checkbox" data-opt="bigWords"> Single words</label>
+      </div></div>
+      <div class="list-group"><h3>My list</h3>
+        <label class="inline"><input type="checkbox" data-opt="custom"> Include my list</label>
+        <textarea id="mfCustom" rows="3" placeholder="One name or phrase per line"></textarea>
+      </div>
+      <div class="list-actions"><button class="link" id="allOn">Select all</button><button class="link" id="allOff">Clear all</button></div>
+    </details>
+    <p class="status" id="mfStats"></p>
+    <ul class="match-list" id="mfOut"></ul>
+    <button class="btn ghost wide" id="moreBtn" hidden>Show more</button>
+    <button class="btn wide" id="mfRare">Compare with random names</button>
+    <p class="hint">Runs 2,000 random names with the same word count through the curated lists.</p>
+    <p id="mfRareOut"></p>
+  </section>
 
-<div class="card">
-  <h2 id="bdTitle">Breakdown</h2>
-  <div class="chips" id="breakdown"></div>
-</div>
-
-<div class="card wrap">
-  <h2>Compare</h2>
-  <div class="row">
-    <input id="cA" placeholder="First word">
-    <input id="cB" placeholder="Second word">
-  </div>
-  <table style="margin-top:12px">
-    <thead><tr><th>Cipher</th><th id="hA">A</th><th id="hB">B</th><th>Difference</th><th>Match</th></tr></thead>
-    <tbody id="cmp"></tbody>
-  </table>
-  <div class="row" style="margin-top:12px;align-items:center">
-    <button id="rareBtn">How rare is this?</button>
-    <span class="muted">Tests 20,000 random names shaped like the second box against the first box.</span>
-  </div>
-  <div id="rareOut" style="margin-top:10px"></div>
-</div>
-
-<div class="card wrap">
-  <h2>Match Finder</h2>
-  <div class="row">
-    <input id="mf" placeholder="Name or phrase to search against lists">
-  </div>
-  <div class="row" id="mfOpts" style="margin-top:10px;font-size:14px">
-    <label><input type="checkbox" value="holy" checked> Holy names</label>
-    <label><input type="checkbox" value="unholy" checked> Unholy names</label>
-    <label><input type="checkbox" value="nations" checked> Nations</label>
-    <label><input type="checkbox" value="combos" checked> Title + nation combos</label>
-    <label><input type="checkbox" value="names" checked> Holy name + title combos</label>
-    <label><input type="checkbox" value="unames" checked> Unholy name + title combos</label>
-    <label><input type="checkbox" value="judge" checked> God judging the devil</label>
-    <label><input type="checkbox" value="phrases" checked> Your phrases</label>
-    <label><input type="checkbox" value="bigPhrases" checked> <span id="bigPhrasesLabel">Dictionary phrases</span></label>
-    <label><input type="checkbox" value="bigWords"> <span id="bigWordsLabel">Dictionary single words</span></label>
-    <span id="mfResearch" class="row" style="gap:10px"></span>
-    <label>Min ciphers <select id="mfMin"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option></select></label>
-    <label>Always on top <select id="mfPromote"><option value="99">off</option><option value="3">3+ ciphers</option><option value="4" selected>4+ ciphers</option><option value="5">5+ ciphers</option></select></label>
-    <label><input type="checkbox" value="custom" checked> My list</label>
-  </div>
-  <textarea id="mfCustom" rows="3" placeholder="My list: one name per line" style="display:none;width:100%;margin-top:10px;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit"></textarea>
-  <p class="muted" id="mfStats"></p>
-  <div class="row" style="align-items:center"><button id="mfRare">Compare with random names</button><span class="muted">Runs 2,000 random names with the same word count through the curated lists (not the big dictionary).</span></div>
-  <p id="mfRareOut"></p>
-  <table>
-    <thead><tr><th>Phrase</th><th>List</th><th>Matching ciphers</th><th>Count</th></tr></thead>
-    <tbody id="mfOut"></tbody>
-  </table>
-</div>
-
-<div class="card wrap">
-  <h2>History</h2>
-  <table><thead id="histHead"></thead><tbody id="hist"></tbody></table>
-</div>
-
-<p class="muted">Notes: Hebrew uses Mispar Hechrachi (finals = base value); English text in the Hebrew cipher uses the common "Jewish" Latin mapping. Latin uses Agrippa's 23-letter table (J→I, U→V, W→VV). Greek (English) transliterates Latin letters to Greek (th→θ, ph→φ, ch→χ, ps→ψ) then applies isopsephy. Isopsephy works on Greek script, including archaic ϛ/ϝ=6, ϙ=90, ϡ=900.</p>
+  <!-- Saved -->
+  <section id="saved" class="screen" hidden>
+    <ul class="saved-list" id="savedList"></ul>
+    <p class="empty" id="savedEmpty">Nothing saved yet. Tap ☆ Save on the Calculate screen.</p>
+  </section>
 </main>
 
-<script src="ciphers.js"></script>
-<script src="phrases.js"></script>
-<script>
+<nav class="tabbar" id="tabbar" aria-label="Sections">
+  <button data-tab="calc"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v16H5z M8 8h8 M8 12h2 M12 12h2 M8 16h2 M12 16h2 M16 12v4"/></svg><span>Calculate</span></button>
+  <button data-tab="compare"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4v16 M17 4v16 M3 8h8 M13 16h8"/></svg><span>Compare</span></button>
+  <button data-tab="find"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.5 17a6.5 6.5 0 1 0 0-13 6.5 6.5 0 0 0 0 13z M15.5 15.5 20 20"/></svg><span>Find</span></button>
+  <button data-tab="saved"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg><span>Saved</span></button>
+</nav>
 
-let selected = 0, history = [];
-try { history = JSON.parse(localStorage.getItem('gem-hist')) || []; } catch {}
-
-const $ = id => document.getElementById(id);
-
-function render(){
-  const n = typeof noteFor === 'function' ? noteFor($('q').value) : '';
-  $('qNote').textContent = n ? '(' + n + ')' : '';
-  const s = $('q').value, res = compute(s);
-  $('results').innerHTML = res.map((r,i)=>`<tr data-i="${i}" class="${i===selected?'sel':''}"><td>${r.name}</td><td class="muted">${r.p.length?r.script:'—'}</td><td class="num">${r.total}</td><td>${r.total?reduce(r.total):0}</td><td>${r.p.length}</td></tr>`).join('');
-  const r = res[selected];
-  $('bdTitle').textContent = 'Breakdown — ' + r.name;
-  $('breakdown').innerHTML = r.p.length ? r.p.map(([c,v])=>`<div class="chip"><b>${c}</b><small>${v}</small></div>`).join('') : '<span class="muted">No letters for this cipher.</span>';
-  $('histHead').innerHTML = `<tr><th>Text</th>${CIPHERS.map(c=>`<th>${c.name.split(' (')[0]}</th>`).join('')}<th></th></tr>`;
-  $('hist').innerHTML = history.map((h,i)=>`<tr><td>${h.replace(/</g,'&lt;')}</td>${compute(h).map(r=>`<td class="num">${r.total}</td>`).join('')}<td><button class="ghost" data-del="${i}">✕</button></td></tr>`).join('');
-}
-function renderCompare(){
-  const a = $('cA').value.trim(), b = $('cB').value.trim(), ra = compute(a), rb = compute(b);
-  const esc = s => s.replace(/</g,'&lt;');
-  $('hA').innerHTML = esc(a) || 'A'; $('hB').innerHTML = esc(b) || 'B';
-  $('cmp').innerHTML = ra.map((x,i) => {
-    const y = rb[i], both = a && b && x.total && y.total;
-    const eq = both && x.total === y.total, red = both && !eq && reduce(x.total) === reduce(y.total);
-    const badge = eq ? '<span class="badge">Equal</span>' : red ? '<span class="badge part">Same root ' + reduce(x.total) + '</span>' : '<span class="muted">—</span>';
-    return `<tr class="${eq?'match':''}"><td>${x.name}</td><td class="num">${x.total}</td><td class="num">${y.total}</td><td>${both ? Math.abs(x.total-y.total) : '—'}</td><td>${badge}</td></tr>`;
-  }).join('');
-}
-$('cA').oninput = $('cB').oninput = renderCompare;
-
-const FIRST = ['James','Mary','John','Patricia','Robert','Jennifer','Michael','Linda','William','Elizabeth','David','Susan','Richard','Jessica','Joseph','Sarah','Thomas','Karen','Charles','Nancy','Daniel','Lisa','Matthew','Betty','Anthony','Sandra','Mark','Ashley','Paul','Emily','Steven','Donna','Andrew','Michelle','Kenneth','Carol','George','Amanda','Rajesh','Priya','Amit','Sunita','Vikram','Anjali','Suresh','Deepa','Arjun','Kavita','Ravi','Neha','Anil','Pooja','Sanjay','Meera','Carlos','Maria','Jose','Ana','Luis','Sofia','Juan','Lucia','Pedro','Elena','Ahmed','Fatima','Omar','Aisha','Hassan','Leila','Wei','Mei','Hiroshi','Yuki','Kwame','Amara','Ivan','Olga','Pierre','Claire','Hans','Greta','Liam','Noah','Oliver','Emma','Ava','Isabella','Lucas','Mateo','Francis','Clara','Vincent','Rosa','Anthony','Teresa','Dominic','Agnes'];
-const LAST = ['Smith','Johnson','Williams','Brown','Jones','Garcia','Miller','Davis','Rodriguez','Martinez','Hernandez','Lopez','Gonzalez','Wilson','Anderson','Thomas','Taylor','Moore','Jackson','Martin','Lee','Perez','Thompson','White','Harris','Sanchez','Clark','Ramirez','Lewis','Robinson','Walker','Young','Allen','King','Wright','Scott','Torres','Nguyen','Hill','Flores','Sharma','Patel','Singh','Kumar','Gupta','Reddy','Nair','Iyer','Menon','Rao','Dsouza','Dsilva','Fernandes','Pereira','Rodrigues','Pinto','Dcosta','Lobo','Mendonca','Almeida','Khan','Ali','Hussain','Chen','Wang','Li','Zhang','Tanaka','Sato','Kim','Park','Mensah','Okafor','Ivanov','Petrov','Dubois','Laurent','Muller','Schmidt','Rossi','Russo','Silva','Santos','Oliveira','Costa','Murphy','Kelly','OBrien','Walsh','Novak','Kowalski','Nowak','Jensen','Hansen','Larsen','Cohen','Levi','Friedman','Katz'];
-const pick = a => a[Math.random() * a.length | 0];
-function randomName(words){
-  const parts = [];
-  for (let i = 0; i < words - 1; i++) parts.push(pick(FIRST));
-  parts.push(pick(LAST));
-  return parts.join(' ');
-}
-$('rareBtn').onclick = () => {
-  const a = $('cA').value.trim(), b = $('cB').value.trim();
-  if (!a || !b) { $('rareOut').innerHTML = '<span class="muted">Fill both boxes first.</span>'; return; }
-  const ta = compute(a), matchCount = x => compute(x).filter((r,i) => r.total && r.total === ta[i].total).length;
-  const k = matchCount(b), words = Math.max(2, b.split(/\s+/).length), N = 20000, hist = Array(CIPHERS.length + 1).fill(0);
-  const t = performance.now();
-  for (let i = 0; i < N; i++) hist[matchCount(randomName(words))]++;
-  const atLeast = hist.slice(k).reduce((x,y)=>x+y,0), ms = (performance.now()-t).toFixed(0);
-  const odds = atLeast ? `about 1 in ${Math.round(N/atLeast).toLocaleString()}` : `fewer than 1 in ${N.toLocaleString()}`;
-  $('rareOut').innerHTML = `<p><b>${b.replace(/</g,'&lt;')}</b> matches <b>${a.replace(/</g,'&lt;')}</b> in <b>${k}</b> cipher${k===1?'':'s'}. Random ${words}-word names reach ${k}+ matches <b>${atLeast}</b> times out of ${N.toLocaleString()} (${odds}). <span class="muted">${ms}ms</span></p>
-  <table><thead><tr><th>Matching ciphers</th>${hist.map((_,i)=>`<th>${i}</th>`).join('')}</tr></thead>
-  <tbody><tr><td>Random names</td>${hist.map((h,i)=>`<td class="${i>=k?'num':''}">${h.toLocaleString()}</td>`).join('')}</tr></tbody></table>
-  <p class="muted">Simple and English Gematria always match together, so a count of 2 can be a single coincidence.</p>`;
-};
-renderCompare();
-
-const LISTS = {
-  holy: ['God','Jesus','Jesus Christ','Christ','Messiah','Yahweh','Jehovah','Elohim','Adonai','El Shaddai','Emmanuel','Immanuel','Holy Spirit','Holy Ghost','Lamb of God','Son of God','Son of Man','King of Kings','Lord of Lords','Alpha and Omega','Prince of Peace','Word of God','Lion of Judah','Good Shepherd','Savior','Redeemer','Most High','Ancient of Days','Michael','Gabriel','Raphael','Mary','Joseph','Peter','Paul','John','Moses','Abraham','David','Elijah','Yeshua','ישוע','יהוה','Ἰησοῦς','Χριστός','ישוע המשיח','One Five Three','One Hundred Fifty Three','One Hundred and Fifty Three','Hundred Fifty Three','One Fifty Three','One Five Three Fish','One Hundred Fifty Three Fish','One Hundred and Fifty Three Fish','Hundred and Fifty Three Great Fish','Great Fishes One Hundred Fifty Three'],
-  unholy: ['Satan','Devil','Lucifer','Beelzebub','Belial','Mammon','Moloch','Baal','Leviathan','Antichrist','Beast','Serpent','Dragon','Abaddon','Apollyon','Asmodeus','Azazel','Lilith','Judas','Jezebel','Nimrod','False Prophet','Man of Sin','Son of Perdition','Mark of the Beast','Whore of Babylon','Prince of Darkness','Father of Lies','Ἀντίχριστος','שטן'],
-  nations: ['Israel','Judah','Babylon','Egypt','Assyria','Persia','Greece','Rome','Edom','Moab','Gog','Magog','America','United States','England','Britain','France','Germany','Russia','China','India','Iran','Iraq','Syria','Turkey','Italy','Spain','Japan','Europe','Vatican','Jerusalem','Zion'],
-};
-const TITLES = ['King of','Prince of','Lord of','Beast of','Savior of','Light of'];
-const HOLY_NAMES = ['Jesus','Jesus Christ','Christ','Lord Jesus','Yeshua','Messiah','Jesus the Christ','Jesus of Nazareth'];
-const EPITHETS = ['Son of David','Son of God','Son of Man','Son of Mary','Son of Joseph','King of Kings','Lord of Lords','King of the Jews','King of Israel','King of Glory','Lamb of God','Lion of Judah','Word of God','Light of the World','Bread of Life','Prince of Peace','Alpha and Omega','the Good Shepherd','the Messiah','the Savior','the Redeemer','the Lord','our Lord','our Savior','the Son of God','the Holy One','the Way the Truth and the Life','the Resurrection and the Life','Almighty','Emmanuel',
-  'Giver of Life','Giver of Eternal Life','Lord of Life','Prince of Life','Return from the Dead','Returned from the Dead','Risen from the Dead','Rose from the Dead','Raised from the Dead','the Risen One','Conqueror of Death','Destroyer of Death','Firstborn from the Dead','God of Creation','God of Salvation','God of Life','Second Coming','Returns in Glory','Judge of the Living and the Dead',
-  'Timeless Salvation','Eternal Salvation','Son of Salvation','Son of Righteousness','Sun of Righteousness','Son of the Most High','Holy One of Israel','Author of Life','Author of Salvation','Light of Life','Bright Morning Star','Righteous One','Anointed One','Chosen One','Timeless King','Eternal King','King Eternal','Everlasting Father','Everlasting Life','Eternal Life','Timeless Life','Giver of Timeless Life','Destroyer of Destruction','Victor over Death','Hope of Glory'];
-const UNHOLY_NAMES = ['Satan','Lucifer','the Devil','Beelzebub','Antichrist','the Beast','the Dragon','Abaddon','Apollyon','Belial'];
-const UNHOLY_EPITHETS = ['God of Destruction','God of Death','God of Darkness','God of This World','God of War','Lord of Destruction','Lord of Death','Lord of Darkness','Lord of the Flies','Prince of Darkness','Prince of This World','Prince of the Air','Father of Lies','Destroyer of Worlds','Bringer of Death','Angel of Death','Angel of Light','King of the Abyss','Ruler of Hell','Return from the Dead','Returned from the Dead','Returns from the Dead','Risen from the Dead','Rise from the Pit','Risen from the Abyss','Back from the Dead','Resurrected','the Deceiver','the Accuser','the Adversary','the Destroyer','the Tempter','the Morning Star','Son of Perdition',
-  'Timeless Destruction','Eternal Destruction','Endless Destruction','Ancient Destruction','Everlasting Destruction','Son of Destruction','Child of Destruction','Father of Destruction','Bringer of Destruction','Lord of Ruin','God of Ruin','Timeless Darkness','Eternal Darkness','Son of Darkness','Son of Satan','Son of the Devil','Abomination of Desolation','Man of Lawlessness','Man of Sin','Lawless One','Evil One','Wicked One','Great Deceiver','Old Serpent','Great Dragon','Fallen Angel','Fallen One','Destroyer','Deceiver','Beast from the Sea','Beast from the Earth','Beast from the Abyss'];
-const JUDGES = ['God','Jesus','Jesus Christ','the Lord','Christ','Michael','the Lamb','the Most High'];
-const JUDGE_VERBS = ['punishes','punished','punishing','judges','judged','judging','destroys','destroyed','destroying','defeats','defeated','defeating','binds','bound','binding','casts out','cast out','casting out','crushes','crushed','crushing','rebukes','rebuked','rebuking','condemns','condemned','condemning','conquers','conquered','conquering','overthrows','overthrew'];
-const JUDGED = ['Satan','the Devil','a Devil','Lucifer','the Beast','the Dragon','the Serpent','the Antichrist','Beelzebub','Demons','the Demon'];
-const JUDGE_PHRASES = ['Punishment of the Devil','Punishment of Satan','Judgment of Satan','Judgment of the Devil','Defeat of Satan','Fall of Lucifer','Fall of Satan','Satan Cast into the Lake of Fire','Devil Cast into the Lake of Fire','Lake of Fire','Bottomless Pit','Satan Bound for a Thousand Years','The Lord Rebuke Thee','The Lord Rebuke You Satan','Get Thee Behind Me Satan','Serpent Head Crushed','Crushing the Serpent','Wrath of God','Day of Judgment','Day of the Lord','Victory over Satan','Victory over the Devil'];
-// user-supplied phrases, grouped by theme; variations are generated below
-const PHRASES = {
-  'Lion of Judah': ['Lion of Judah Blast Off','Lion of Judah Talented','Lion of Judah Rises','Lion of Judah Roars','Lion of Judah Returns','Lion of Judah Has Come','Lion of Judah Victorious','Lion of Judah Anointed','Lion of Judah Chosen','Lion of Judah Gifted'],
-  'Heaven & salvation': ['The Access into Heaven','Access into Heaven','Access to Heaven','The Gate of Heaven','She Gets into Heaven','She Got into Heaven','She Will Get into Heaven','Shes Going to Be Saved','She Is Going to Be Saved','She Will Be Saved','She Is Saved','Shes Saved','Saved by Grace','Going to Heaven'],
-  'Revelation': ['Secret Is Revealed God','The Secret Is Revealed','Secret Revealed','God Reveals the Secret','The Secret of God','Hidden Things Revealed','The Mystery Revealed','Revealed by God',
-    'Revealing the Secret','Reveal the Secret','Reveals the Secret','Revealed the Secret','Revealing a Secret','Revealing Secrets','Revealing the Secrets','Revealing the Hidden Secret','Revealing the Secret of God','Revealing Gods Secret','God Revealing the Secret','God Reveals the Secret','She Is Revealing the Secret','Shes Revealing the Secret','She Reveals the Secret','She Revealed the Secret','The Revealing of the Secret','Secret Revealing','The Secret Revealing','Revealing the Mystery','Unveiling the Secret','Exposing the Secret','Disclosing the Secret','Uncovering the Secret','Revealing the Truth','Revealing the Hidden Truth'],
-  'Bride': ['Jealous of Me Real Bride','Jealous of Me the Real Bride','Jealous of Me True Bride','Jealous of the Real Bride','Jealous of the True Bride','Jealous of Real Bride','Jealous of Her Real Bride','Jealous of His Real Bride','Jealous of My Real Bride','Jealous of Me Real Groom','Jealous of Me Real Husband','Jealous of Me Real Wife','Envious of Me Real Bride','Envious of the Real Bride','Jealousy of the Real Bride','They Are Jealous of the Real Bride','They Are Jealous of Me','She Is Jealous of the Real Bride','She Is the Real Bride','Shes the Real Bride','She Is the True Bride','I Am the Real Bride','The Real Bride','The True Bride','Real Bride of Christ','True Bride of Christ','The Bride of Christ','The Bride of the Lamb','The Chosen Bride','The Rightful Bride','The False Bride','Jealous of the Bride of Christ'],
-  'JC warning': ['Stop Pissin JC Off', 'Stop Pissing JC Off', 'Stop Pissin Off JC', 'Stop Pissing Off JC', 'Quit Pissin JC Off', 'Quit Pissing JC Off', 'Dont Piss JC Off', 'Pissin JC Off', 'Pissing JC Off', 'Youre Pissin JC Off', 'Youre Pissing JC Off', 'Stop Angering JC', 'Stop Making JC Mad', 'Stop Making JC Angry', 'Stop Provoking JC', 'Stop Upsetting JC', 'Stop Pissin Jesus Christ Off', 'Stop Pissing Jesus Christ Off', 'Stop Pissin Off Jesus Christ', 'Stop Pissing Off Jesus Christ', 'Quit Pissin Jesus Christ Off', 'Quit Pissing Jesus Christ Off', 'Dont Piss Jesus Christ Off', 'Pissin Jesus Christ Off', 'Pissing Jesus Christ Off', 'Youre Pissin Jesus Christ Off', 'Youre Pissing Jesus Christ Off', 'Stop Angering Jesus Christ', 'Stop Making Jesus Christ Mad', 'Stop Making Jesus Christ Angry', 'Stop Provoking Jesus Christ', 'Stop Upsetting Jesus Christ', 'Stop Pissin Jesus Off', 'Stop Pissing Jesus Off', 'Stop Pissin Off Jesus', 'Stop Pissing Off Jesus', 'Quit Pissin Jesus Off', 'Quit Pissing Jesus Off', 'Dont Piss Jesus Off', 'Pissin Jesus Off', 'Pissing Jesus Off', 'Youre Pissin Jesus Off', 'Youre Pissing Jesus Off', 'Stop Angering Jesus', 'Stop Making Jesus Mad', 'Stop Making Jesus Angry', 'Stop Provoking Jesus', 'Stop Upsetting Jesus', 'Stop Pissin Christ Off', 'Stop Pissing Christ Off', 'Stop Pissin Off Christ', 'Stop Pissing Off Christ', 'Quit Pissin Christ Off', 'Quit Pissing Christ Off', 'Dont Piss Christ Off', 'Pissin Christ Off', 'Pissing Christ Off', 'Youre Pissin Christ Off', 'Youre Pissing Christ Off', 'Stop Angering Christ', 'Stop Making Christ Mad', 'Stop Making Christ Angry', 'Stop Provoking Christ', 'Stop Upsetting Christ', 'Stop Pissin God Off', 'Stop Pissing God Off', 'Stop Pissin Off God', 'Stop Pissing Off God', 'Quit Pissin God Off', 'Quit Pissing God Off', 'Dont Piss God Off', 'Pissin God Off', 'Pissing God Off', 'Youre Pissin God Off', 'Youre Pissing God Off', 'Stop Angering God', 'Stop Making God Mad', 'Stop Making God Angry', 'Stop Provoking God', 'Stop Upsetting God', 'Stop Pissin the Lord Off', 'Stop Pissing the Lord Off', 'Stop Pissin Off the Lord', 'Stop Pissing Off the Lord', 'Quit Pissin the Lord Off', 'Quit Pissing the Lord Off', 'Dont Piss the Lord Off', 'Pissin the Lord Off', 'Pissing the Lord Off', 'Youre Pissin the Lord Off', 'Youre Pissing the Lord Off', 'Stop Angering the Lord', 'Stop Making the Lord Mad', 'Stop Making the Lord Angry', 'Stop Provoking the Lord', 'Stop Upsetting the Lord'],
-  'Vaccines': ['The Vaccines Not Be Safe', 'The Vaccines Be Not Safe', 'The Vaccines Not Safe', 'The Vaccines Are Not Safe', 'The Vaccines Arent Safe', 'The Vaccines Are Unsafe', 'The Vaccines Are Safe', 'The Vaccines Be Safe', 'The Vaccines Not Be Safe at All', 'The Vaccine Not Be Safe', 'The Vaccine Be Not Safe', 'The Vaccine Not Safe', 'The Vaccine Is Not Safe', 'The Vaccine Isnt Safe', 'The Vaccine Is Unsafe', 'The Vaccine Is Safe', 'The Vaccine Be Safe', 'The Vaccine Not Be Safe at All', 'Vaccines Not Be Safe', 'Vaccines Be Not Safe', 'Vaccines Not Safe', 'Vaccines Are Not Safe', 'Vaccines Arent Safe', 'Vaccines Are Unsafe', 'Vaccines Are Safe', 'Vaccines Be Safe', 'Vaccines Not Be Safe at All', 'The Vax Not Be Safe', 'The Vax Be Not Safe', 'The Vax Not Safe', 'The Vax Is Not Safe', 'The Vax Isnt Safe', 'The Vax Is Unsafe', 'The Vax Is Safe', 'The Vax Be Safe', 'The Vax Not Be Safe at All', 'The Jab Not Be Safe', 'The Jab Be Not Safe', 'The Jab Not Safe', 'The Jab Is Not Safe', 'The Jab Isnt Safe', 'The Jab Is Unsafe', 'The Jab Is Safe', 'The Jab Be Safe', 'The Jab Not Be Safe at All', 'The Shot Not Be Safe', 'The Shot Be Not Safe', 'The Shot Not Safe', 'The Shot Is Not Safe', 'The Shot Isnt Safe', 'The Shot Is Unsafe', 'The Shot Is Safe', 'The Shot Be Safe', 'The Shot Not Be Safe at All'],
-  'Identity': ['I Am the Female Savior', 'I Am the Savior', 'I Am the Male Savior', 'She Is the Female Savior', 'The Female Savior', 'A Female Savior', 'I Am Project Monarch', 'I Was Project Monarch', 'She Is Project Monarch', 'Project Monarch Survivor', 'All Believe I Am Lucifer', 'All Believe Im Lucifer', 'They All Believe I Am Lucifer', 'Everyone Believes I Am Lucifer', 'All Believe She Is Lucifer', 'All Believe I Am God', 'All Believe I Am the Devil', 'Evil Cant Accept Im God', 'Evil Cant Accept I Am God', 'Evil Cannot Accept Im God', 'Evil Cannot Accept I Am God', 'Evil Cant Accept She Is God', 'The Devil Cant Accept Im God', 'Satan Cant Accept Im God'],
-  'Visions': ['Vision of Comedies', 'Vision of Comedy', 'Visions of Comedies', 'Vision of Meeting', 'Vision of the Meeting', 'Vision of a Meeting', 'Visions of Meeting', 'Vision of the Mind', 'Visions of the Mind', 'A Vision of the Mind', 'Vision of Mind'],
-  'Esoteric & lore': ['AI Dissolving Self', 'AI Dissolving the Self', 'AI Dissolves Self', 'AI Dissolving Itself', 'The AI Dissolving Self', 'Divine Genes Snakes', 'Divine Snake Genes', 'Divine Serpent Genes', 'Divine Genes Serpents', 'Snake Genes', 'Akhenaten Dead Forever', 'Akhenaten Is Dead Forever', 'Akhenaten Dead', 'Akhenaten Lives Forever', 'Akhenaten Returns', 'In Hoc Signo Vinces', 'In This Sign Conquer', 'In This Sign You Will Conquer', 'Dracone Bona Dividebant', 'Big Foot Shaved Clone', 'Bigfoot Shaved Clone', 'Bigfoot Clone', 'Shaved Bigfoot', 'The Skies Are Alive', 'Skies Are Alive', 'The Sky Is Alive', 'Cabal Eviction Notice', 'The Cabal Eviction Notice', 'Eviction of the Cabal', 'The Cabal Evicted', 'Jeppesen Terminal', 'The Jeppesen Terminal', 'Denver Airport Jeppesen Terminal', 'Vietnamese Is King', 'Vietnam Is King', 'The Vietnamese Are Kings'],
-  'Names': ['Homer John Thomas', 'Peterick Johnson', 'Senator John McCain', 'John McCain', 'John Sidney McCain'],
-  'Six six six': ['Number Six Six Six', 'Six Six Six Number', 'The Number Six Six Six', 'Six Six Six the Number', 'Six Six Six', 'Triple Six', 'Triple Six Number', 'Six Hundred Sixty Six', 'Six Hundred and Sixty Six', 'Number Six Hundred Sixty Six', 'The Number Six Hundred Sixty Six', 'His Number Is Six Six Six', 'Its Number Is Six Six Six', 'The Number of the Beast', 'Number of the Beast Six Six Six', 'Six Six Six the Number of the Beast', 'The Mark Six Six Six', 'Mark of Six Six Six', 'Holy Number Six', 'Number Six'],
-  'Truth & reversal': ['Revelation of Truth', 'The Revelation of Truth', 'Revelation of the Truth', 'Revelations of Truth', 'Truth Revealed', 'Learn to Think Backwards', 'Backwards Learn to Think', 'Learning to Think Backwards', 'Learn to Think in Reverse', 'Think Backwards', 'Reverse Foreclosure', 'The Reverse Foreclosure', 'Evil Cannot Be Trusted', 'Evil Cant Be Trusted', 'Evil Can Never Be Trusted', 'The Devil Cannot Be Trusted', 'Satan Cannot Be Trusted', 'I No Answer a Demon Scream', 'I Do Not Answer a Demon Scream', 'I Dont Answer a Demons Scream', 'I Answer No Demon Scream'],
-  'Everyday': ['Do Is Not Mandatory', 'It Is Not Mandatory', 'Not Mandatory', 'Im Burning My Books', 'I Am Burning My Books', 'Burning My Books', 'Im So Sorry Renne', 'I Am So Sorry Renne', 'My Armpit Stinks', 'My Armpits Stink', 'My Pink Lotus Life', 'Pink Lotus Life', 'The Pink Lotus', 'Playful Teasing Lol', 'Playful Teasing', 'Thank You All Is on AI', 'Thank You All', 'All Is on AI', 'Pinkie Pie Le Dijo Smile', 'Pinkie Pie Said Smile', 'A Two Peas in a Pod', 'Two Peas in a Pod', 'Like Two Peas in a Pod', 'Let It Be So Now', 'Let It Be So', 'So Let It Be', 'Brooks Was Heard', 'Brooks Was Here', 'Fantastic Woman', 'A Fantastic Woman', 'The Fantastic Woman', 'Not a Show Ariana', 'It Is Not a Show', 'I Would Slam Him', 'I Would Slam Her', 'Daisy Josephine', 'My Promise to You', 'My Promise to You All', 'Our Promise to You', 'A Promise to You', 'Sorry and Thank You', 'Im Sorry and Thank You', 'Thank You and Sorry', 'So Lets Make It Shall We', 'Lets Make It Shall We', 'So Shall We Make It', 'Less Than a Week Tik Tok', 'Less Than a Week', 'Gad Zooks or Gadzooks', 'Gadzooks', 'The Ultra Livestream', 'Ultra Livestream'],
-  'Sexuality': ['Truly Homosexual', 'Truly a Homosexual', 'Homosexual Truly', 'She Is Truly Homosexual', 'Shes Truly Homosexual', 'Truly Gay', 'Truly Lesbian', 'Truly Bisexual', 'Truly Heterosexual', 'Truly Straight', 'Truly Asexual', 'Secretly Homosexual', 'Openly Homosexual'],
-  'Crude': ['Pissflaps Dawn', 'Pissflaps', 'Kill Me Now or Get Fucked', 'Kill Me Now or Get Fucked Up', 'Kill Me or Get Fucked', 'Kill Me Now'],
-  'Nero & decoding': ['נרון קסר', 'נרו קסר', 'Decode NRWN QSR', 'Decode NRWNQSR', 'NRWN QSR', 'Nero Caesar', 'Neron Kaisar', 'Neron Qesar', 'Nero Caesar Six Six Six', 'Decode Nero Caesar', 'Decode the Number'],
-  'Royalty & Egypt': ['Pharaohs Crown', 'The Pharaohs Crown', 'Crown of Pharaoh', 'Crown of the Pharaoh', 'Wonderful King', 'The Wonderful King', 'A Wonderful King', 'Princess Down', 'The Princess Down', 'Princess Is Down', 'Get Down Moses', 'Go Down Moses', 'Let My People Go'],
-  'Awareness': ['Awareness of NPC', 'Awareness of NPCs', 'Awareness of the NPC', 'NPC Awareness', 'Delete Bots Now', 'Delete the Bots Now', 'Delete Bots', 'Parietal Power', 'The Parietal Power', 'Element Wasser', 'Element Water', 'The Water Element'],
-  'Torah & lineage': ['Apply Oldest Torah', 'Apply the Oldest Torah', 'The Oldest Torah', 'Oldest Torah', 'Body as Torah Scroll', 'The Body as Torah Scroll', 'Body as a Torah Scroll', 'My Body Is a Torah Scroll', 'Babylonian Talmudism', 'Babylonian Talmud', 'The Babylonian Talmud', 'Talmudism', 'King David Lineage in America', 'King David Lineage', 'The Lineage of King David', 'Davidic Lineage in America', 'Real Masonic Story', 'The Real Masonic Story', 'Masonic Story', 'Moral Story Theme', 'The Moral Story Theme', 'Moral of the Story'],
-  'Prophecy': ['Forty One Months', 'Forty Two Months', 'Forty Two Months of Tribulation', 'Three and a Half Years', 'Twelve Hundred Sixty Days', 'Time Times and Half a Time'],
-  'Politics': ['King Trump My Idol', 'King Trump', 'Trump My Idol', 'Donald Trump My Idol'],
-  'Trial & victim': ['The Hard Road Be Traveled','The Hard Road Traveled','Hard Road to Travel','The Narrow Road','The Narrow Way','Shes the Real Victim','She Is the Real Victim','The Real Victim','Innocent Victim','She Was the Victim'],
-};
-// "Being Christ Vessel" and variations across deities / entities
-const VESSEL_ENTITIES = ['Christ','Jesus','Jesus Christ','God','the Lord','the Holy Spirit','Yahweh','the Messiah','the Most High','Michael','Gabriel','Metatron','Sophia','Lucifer','Satan','the Devil','the Antichrist','the Beast','Baphomet','Babalon','Shiva','Vishnu','Krishna','Kali','Brahma','the Buddha','Maitreya','Allah','the Mahdi','Osiris','Horus','Isis','Ra','Thoth','Zeus','Apollo','Dionysus','Odin','Loki','Marduk','Baal','Mithras','Quetzalcoatl','the Divine','the Spirit'];
-const VESSEL_FORMS = ['Being {e} Vessel','Being the {e} Vessel','Being a {e} Vessel','{e} Vessel','The {e} Vessel','Vessel of {e}','The Vessel of {e}','Being the Vessel of {e}','Being a Vessel of {e}','Being a Vessel for {e}','Chosen Vessel of {e}','Being {e}s Vessel','Being {e} Temple','Being {e} Channel','Being {e} Host','Being {e} Instrument','Being {e} Avatar','Being {e} Incarnate'];
-const vesselPhrases = () => VESSEL_ENTITIES.flatMap(e => VESSEL_FORMS.map(f =>
-  f.replace('{e}', e).replace(/\b(the|a) the /gi, '$1 ')));
-// short explanations shown next to obscure phrases (kept separate so they don't change totals)
-const NOTES = {
- "Decode NRWN QSR": "NRWN QSR is \"Nero Caesar\" in Hebrew letters (נרון קסר), which totals 666 — the classic reading of Revelation 13:18",
- "Decode NRWNQSR": "NRWN QSR is \"Nero Caesar\" in Hebrew letters (נרון קסר), which totals 666",
- "NRWN QSR": "\"Nero Caesar\" transliterated into Hebrew letters; totals 666 in Hebrew gematria",
- "נרון קסר": "\"Nero Caesar\" in Hebrew letters (Neron Qesar); totals 666",
- "נרו קסר": "\"Nero Caesar\" without the final N (Latin spelling); totals 616, the variant number in some early Revelation manuscripts",
- "Neron Kaisar": "Greek form of \"Nero Caesar\"; its Hebrew spelling totals 666",
- "Neron Qesar": "Hebrew form of \"Nero Caesar\"; totals 666",
- "Nero Caesar": "Roman emperor (54–68 AD); his name in Hebrew letters totals 666",
- "Nero Caesar Six Six Six": "Nero Caesar in Hebrew letters totals 666 (Revelation 13:18)",
- "Dracone Bona Dividebant": "Latin: \"they were dividing the goods with the dragon\"",
- "In Hoc Signo Vinces": "Latin: \"In this sign you will conquer\" — Constantine's vision of the cross, 312 AD",
- "Jeppesen Terminal": "Main terminal of Denver International Airport, known for conspiracy lore about its murals",
- "The Jeppesen Terminal": "Main terminal of Denver International Airport",
- "I Am Project Monarch": "Project Monarch: alleged CIA mind-control program — conspiracy lore, not documented",
- "Project Monarch Survivor": "Project Monarch: alleged CIA mind-control program — conspiracy lore",
- "Akhenaten Dead Forever": "Akhenaten: Egyptian pharaoh (c. 1353–1336 BC) who imposed worship of the sun disk Aten",
- "Element Wasser": "Wasser is German for \"water\"",
- "Parietal Power": "Parietal lobe: brain region for sensation and spatial awareness",
- "Forty One Months": "Revelation 13:5 gives the beast forty-two months",
- "Forty Two Months": "Revelation 13:5 — the beast's reign; equals 1,260 days or 3½ years",
- "Twelve Hundred Sixty Days": "Revelation 11:3 and 12:6 — equals forty-two months",
- "Time Times and Half a Time": "Daniel 7:25 and Revelation 12:14 — read as 3½ years",
- "One Five Three": "153: the number of fish caught in John 21:11",
- "One Five Three Fish": "John 21:11 — the disciples catch 153 fish",
- "One Hundred Fifty Three Fish": "John 21:11 — the disciples catch 153 fish",
- "Gad Zooks or Gadzooks": "Gadzooks: old mild oath, probably from \"God's hooks\" (the nails of the cross)",
- "Gadzooks": "Old mild oath, probably from \"God's hooks\" (the nails of the cross)",
- "Pissflaps Dawn": "Pissflaps: British slang, crude",
- "Babylonian Talmud": "Main compilation of Jewish law and commentary, completed c. 500 AD",
- "Babylonian Talmudism": "Talmud: main compilation of Jewish law; \"Talmudism\" is often used as a pejorative",
- "Get Down Moses": "Echoes \"Go Down Moses\", the spiritual about the Exodus",
- "Go Down Moses": "African-American spiritual about the Exodus (Exodus 5:1)",
- "Let My People Go": "Exodus 5:1 — Moses' demand to Pharaoh",
- "Awareness of NPC": "NPC: \"non-player character\", slang for people seen as acting without independent thought",
- "Pinkie Pie Le Dijo Smile": "Spanish/English mix: \"Pinkie Pie told her Smile\" (My Little Pony)"
-};
-const noteFor = p => NOTES[Object.keys(NOTES).find(k => k.toLowerCase() === p.trim().toLowerCase())] || '';
-// she -> he / they variants for the personal phrases
-const pronounVariants = p => /\bshes?\b/i.test(p) ? [p, p.replace(/\bShes\b/g,'Hes').replace(/\bShe\b/g,'He'), p.replace(/\bShes\b/g,'Theyre').replace(/\bShe Is\b/g,'They Are').replace(/\bShe\b/g,'They').replace(/\bThey Gets\b/g,'They Get').replace(/\bThey Was\b/g,'They Were')] : [p];
-// every title with and without a leading "the"
-const withThe = list => [...new Set(list.flatMap(e => /^the /i.test(e) ? [e, e.slice(4)] : [e, 'the '+e]))];
-
-// Every built-in list, each tagged with the checkbox ("opt") that enables it.
-function allEntries(){
-  const out = [], add = (p, list, opt) => out.push([p, list, opt]);
-  for (const k of ['holy','unholy','nations']) LISTS[k].forEach(p => add(p, k, k));
-  withThe(EPITHETS).forEach(e => { add(e, 'holy title', 'names'); HOLY_NAMES.forEach(h => { if (!e.startsWith(h)) add(h+' '+e, 'name combo', 'names'); }); });
-  withThe(UNHOLY_EPITHETS).forEach(e => { add(e, 'unholy title', 'unames'); UNHOLY_NAMES.forEach(h => add(h+' '+e, 'unholy combo', 'unames')); });
-  JUDGE_PHRASES.forEach(p => add(p, 'judgment', 'judge'));
-  JUDGES.forEach(j => JUDGE_VERBS.forEach(v => JUDGED.forEach(d => add(j+' '+v+' '+d, 'judgment', 'judge'))));
-  vesselPhrases().forEach(p => add(p, 'Vessel', 'phrases'));
-  for (const [cat, ps] of Object.entries(PHRASES)) ps.flatMap(pronounVariants).forEach(p => add(p, cat, 'phrases'));
-  for (const [cat, ps] of Object.entries(window.EXTRA_PHRASES || {})) ps.forEach(p => add(p, cat, 'x:' + cat.split(':')[0]));
-  TITLES.forEach(t => LISTS.nations.forEach(n => add(t+' '+n, 'combo', 'combos')));
-  return out;
-}
-
-// Hash-map index: for each cipher, total -> ids of phrases with that total.
-// Built once; a search is then a handful of map lookups instead of a full scan.
-let IDX = null;
-function getIndex(){
-  if (IDX) return IDX;
-  const byKey = new Map(), phrases = [], lists = [], opts = [];
-  for (const [p, list, opt] of allEntries()) {
-    const k = p.toLowerCase();
-    let id = byKey.get(k);
-    if (id === undefined) { id = phrases.length; byKey.set(k, id); phrases.push(p); lists.push(list); opts.push(new Set()); }
-    opts[id].add(opt);
-  }
-  const C = CIPHERS.length, maps = Array.from({length: C}, () => new Map());
-  phrases.forEach((p, id) => compute(p).forEach((r, i) => {
-    if (!r.total) return;
-    const m = maps[i]; let a = m.get(r.total);
-    if (!a) m.set(r.total, a = []);
-    a.push(id);
-  }));
-  return IDX = {phrases, lists, opts, maps};
-}
-
-const enabledOpts = () => new Set([...document.querySelectorAll('#mfOpts input:checked')].map(i => i.value));
-const customList = () => document.querySelector('#mfOpts input[value=custom]').checked
-  ? $('mfCustom').value.split('\n').map(s => s.trim()).filter(Boolean) : [];
-
-// Kept for compatibility: the currently enabled phrases as [phrase, list].
-function mfEntries(){
-  const idx = getIndex(), on = enabledOpts(), out = [];
-  idx.phrases.forEach((p, id) => { if ([...idx.opts[id]].some(o => on.has(o))) out.push([p, idx.lists[id]]); });
-  customList().forEach(p => out.push([p, 'mine']));
-  return out;
-}
-
-// Phrases sharing at least `min` cipher totals with `totals`, as [{p, list, hits:[cipher index]}].
-function findMatches(totals, min, on, custom){
-  const idx = getIndex(), counts = new Map();
-  totals.forEach((t, i) => {
-    if (!t) return;
-    for (const id of idx.maps[i].get(t) || []) {
-      let c = counts.get(id);
-      if (!c) counts.set(id, c = []);
-      c.push(i);
-    }
-  });
-  const rows = [];
-  for (const [id, hits] of counts)
-    if (hits.length >= min && [...idx.opts[id]].some(o => on.has(o))) rows.push({p: idx.phrases[id], list: idx.lists[id], hits});
-  for (const p of custom) {
-    const hits = [];
-    compute(p).forEach((r, i) => { if (r.total && r.total === totals[i]) hits.push(i); });
-    if (hits.length >= min) rows.push({p, list: 'mine', hits});
-  }
-  return rows;
-}
-
-// Big dictionary (~1.2M words, WordNet terms and public-domain book lines), prebuilt by
-// build/build-index.js into gzipped files grouped by cipher total. A search downloads one
-// file per indexed cipher and checks those candidates, so the page never loads it all.
-let BIG = null;
-fetch('data/big/meta.json').then(r => r.ok ? r.json() : null).then(m => {
-  if (!m) return;
-  BIG = m;
-  renderMatches();
-}).catch(() => {});
-const bigCache = new Map();
-function bigShard(cipher, bucket){
-  const url = `data/big/c${cipher}/${bucket}.txt.gz`;
-  if (!bigCache.has(url)) bigCache.set(url, fetch(url).then(async r => {
-    if (!r.ok) return [];
-    const buf = new Uint8Array(await r.arrayBuffer());
-    // Some servers decompress .gz on the way; only gunzip if the gzip magic bytes are there.
-    const text = buf[0] === 0x1f && buf[1] === 0x8b
-      ? await new Response(new Blob([buf]).stream().pipeThrough(new DecompressionStream('gzip'))).text()
-      : new TextDecoder().decode(buf);
-    return text ? text.split('\n') : [];
-  }).catch(() => []));
-  return bigCache.get(url);
-}
-async function findBigMatches(totals, min, on){
-  if (!BIG) return [];
-  const lists = await Promise.all(BIG.shards.map(s => totals[s.cipher] ? bigShard(s.cipher, Math.floor(totals[s.cipher] / s.bucket)) : []));
-  const idx = getIndex(), curated = new Set(idx.phrases.map(p => p.toLowerCase())), seen = new Set(), rows = [];
-  for (const list of lists) for (const p of list) {
-    const k = p.toLowerCase();
-    if (seen.has(k) || curated.has(k)) continue;
-    const single = !p.includes(' ');
-    if (!on.has(single ? 'bigWords' : 'bigPhrases')) continue;
-    seen.add(k);
-    const hits = [];
-    compute(p).forEach((r, i) => { if (r.total && r.total === totals[i]) hits.push(i); });
-    if (hits.length >= min) rows.push({p, list: single ? 'dictionary word' : 'dictionary phrase', hits, word: single});
-  }
-  return rows;
-}
-
-const MAX_ROWS = 500;
-let mfToken = 0;
-function renderMatches(){
-  $('mfCustom').style.display = document.querySelector('#mfOpts input[value=custom]').checked ? 'block' : 'none';
-  const q = $('mf').value.trim(), token = ++mfToken;
-  if (!q) { $('mfOut').innerHTML = ''; $('mfStats').textContent = ''; return; }
-  const t0 = performance.now(), totals = compute(q).map(r => r.total), min = +$('mfMin').value, on = enabledOpts();
-  const rows = findMatches(totals, min, on, customList());
-  showMatches(rows, totals, min, performance.now() - t0, (on.has('bigWords') || on.has('bigPhrases')) && BIG ? 'searching…' : '');
-  if (!(on.has('bigWords') || on.has('bigPhrases')) || !BIG) return;
-  clearTimeout(renderMatches.timer);
-  renderMatches.timer = setTimeout(async () => {
-    const t1 = performance.now(), big = await findBigMatches(totals, min, on);
-    if (token === mfToken) showMatches(rows.concat(big), totals, min, performance.now() - t0, `${big.length.toLocaleString()} from the big dictionary in ${(performance.now() - t1).toFixed(0)}ms`);
-  }, 250);
-}
-function showMatches(rows, totals, min, ms, bigNote){
-  // Rows with enough ciphers go to the top wherever they came from; dictionary single words
-  // otherwise sit at the bottom, below curated and dictionary phrases.
-  const promote = +$('mfPromote').value, tier = r => r.hits.length >= promote ? 0 : r.word ? 2 : 1;
-  rows.sort((a,b) => tier(a) - tier(b) || b.hits.length - a.hits.length);
-  const esc = s => s.replace(/</g,'&lt;');
-  $('mfStats').textContent = `${rows.length.toLocaleString()} phrases match in ${min}+ ciphers across ${getIndex().phrases.length.toLocaleString()} curated phrases${BIG ? ` + ${BIG.count.toLocaleString()} dictionary entries` : ''} (${ms.toFixed(0)}ms${bigNote ? '; ' + bigNote : ''}).${rows.length > MAX_ROWS ? ` Showing the top ${MAX_ROWS}.` : ''}`;
-  $('mfOut').innerHTML = rows.slice(0, MAX_ROWS).map(r => `<tr><td>${esc(r.p)}${noteFor(r.p) ? `<br><span class="muted" style="white-space:normal;font-size:12px">(${esc(noteFor(r.p))})</span>` : ''}</td><td class="muted">${r.list}</td><td>${r.hits.map(i=>`<span class="badge part">${CIPHERS[i].name.split(' (')[0]} ${totals[i]}</span>`).join(' ')}</td><td class="num">${r.hits.length}</td></tr>`).join('') || '<tr><td colspan="4" class="muted">No exact matches.</td></tr>';
-}
-$('mfResearch').innerHTML = [...new Set(Object.keys(window.EXTRA_PHRASES || {}).map(c => c.split(':')[0]))]
-  .map(g => `<label><input type="checkbox" value="x:${g}" checked> ${g}</label>`).join('');
-$('mf').oninput = $('mfCustom').oninput = $('mfOpts').onchange = renderMatches;
-$('mfMin').onchange = $('mfPromote').onchange = renderMatches;
-$('mfRare').onclick = () => {
-  const q = $('mf').value.trim(); if (!q) return;
-  const min = +$('mfMin').value, words = Math.max(2, q.split(/\s+/).length), on = enabledOpts(), custom = customList();
-  const count = x => findMatches(compute(x).map(r => r.total), min, on, custom).length;
-  const t0 = performance.now(), mine = count(q), N = 2000, rs = Array.from({length: N}, () => count(randomName(words)));
-  const avg = rs.reduce((a,b)=>a+b,0) / N, asMany = rs.filter(r => r >= mine).length;
-  $('mfRareOut').innerHTML = `<b>${q.replace(/</g,'&lt;')}</b>: <b>${mine}</b> phrases with ${min}+ matching ciphers. Random ${words}-word names average <b>${avg.toFixed(1)}</b>; ${asMany.toLocaleString()} of ${N.toLocaleString()} got ${mine} or more. <span class="muted">${(performance.now()-t0).toFixed(0)}ms</span>`;
-};
-
-const persist = () => { try { localStorage.setItem('gem-hist', JSON.stringify(history)); } catch {} };
-
-$('q').oninput = render;
-$('q').onkeydown = e => { if (e.key === 'Enter') $('save').click(); };
-$('save').onclick = () => { const v = $('q').value.trim(); if (v && !history.includes(v)) { history.unshift(v); persist(); render(); } };
-$('clear').onclick = () => { $('q').value=''; render(); };
-$('results').onclick = e => { const tr = e.target.closest('tr'); if (tr) { selected = +tr.dataset.i; render(); } };
-$('hist').onclick = e => { const d = e.target.dataset.del; if (d!==undefined) { history.splice(d,1); persist(); render(); } else { const tr=e.target.closest('tr'); if(tr){ $('q').value = tr.cells[0].textContent; render(); } } };
-const kbd = (el, chars) => { el.innerHTML = [...chars].map(c=>`<span>${c}</span>`).join(''); el.onclick = e => { if (e.target.tagName==='SPAN') { $('q').value += e.target.textContent; render(); $('q').focus(); } }; };
-kbd($('heKbd'), 'אבגדהוזחטיכךלמםנןסעפףצץקרשת');
-kbd($('grKbd'), 'αβγδεϛζηθικλμνξοπϙρσςτυφχψωϡ');
-render();
-</script>
+<dialog id="settings">
+  <form method="dialog">
+    <h2>Settings</h2>
+    <fieldset class="theme-pick"><legend>Theme</legend>
+      <label><input type="radio" name="theme" value="system"> System</label>
+      <label><input type="radio" name="theme" value="light"> Light</label>
+      <label><input type="radio" name="theme" value="dark"> Dark</label>
+    </fieldset>
+    <h3>About the ciphers</h3>
+    <p>Hebrew uses Mispar Hechrachi (final letters count as their base value); English letters in the Hebrew cipher use the common "Jewish" Latin mapping. Simple Gematria is A=1…Z=26 and English Gematria is Simple × 6. Simple English reduces each letter to 1–9. Latin uses Agrippa's 23-letter table (J→I, U→V, W→VV). Greek (English) transliterates to Greek letters (th→θ, ph→φ, ch→χ, ps→ψ) then applies isopsephy. Isopsephy works on Greek script, including archaic ϛ/ϝ=6, ϙ=90, ϡ=900.</p>
+    <h3>Sources</h3>
+    <p>Dictionary: <a href="https://github.com/dwyl/english-words" target="_blank" rel="noopener">dwyl/english-words</a> (Unlicense), <a href="https://github.com/globalwordnet/english-wordnet" target="_blank" rel="noopener">Open English WordNet</a> (CC BY 4.0), and public-domain books from <a href="https://www.gutenberg.org/" target="_blank" rel="noopener">Project Gutenberg</a>.</p>
+    <p class="hint" id="version"></p>
+    <button class="btn wide" value="close">Done</button>
+  </form>
+</dialog>
 </body>
 </html>

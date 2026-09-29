@@ -1,6 +1,7 @@
 {
   "version": "0.0.1",
   "configurations": [
-    { "name": "static", "runtimeExecutable": "python3", "runtimeArgs": ["-m", "http.server", "8123"], "port": 8123 }
+    { "name": "vite", "runtimeExecutable": "npx", "runtimeArgs": ["vite", "--port", "5173", "--strictPort"], "port": 5173 },
+    { "name": "static", "runtimeExecutable": "python3", "runtimeArgs": ["-m", "http.server", "8123", "--directory", "dist"], "port": 8123 }
   ]
 }
