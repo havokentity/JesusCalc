@@ -18,7 +18,8 @@ async function fetchBytes(url) {
   const r = await fetch(url);
   if (!r.ok) throw new Error(`${url}: ${r.status}`);
   const buf = new Uint8Array(await r.arrayBuffer());
-  // Some servers decompress .gz on the way; only gunzip when the gzip magic bytes are there.
+  // The files are gzipped, but a server may already have decompressed them on the way;
+  // only gunzip when the gzip magic bytes are there.
   return buf[0] === 0x1f && buf[1] === 0x8b ? gunzipSync(buf) : buf;
 }
 
@@ -26,7 +27,7 @@ function load(base) {
   return ready ??= (async () => {
     postMessage({ type: 'status', state: 'loading' });
     const meta = await (await fetch(base + 'meta.json')).json();
-    const [text, bin] = await Promise.all([fetchBytes(base + 'phrases.txt.gz'), fetchBytes(base + 'totals.bin.gz')]);
+    const [text, bin] = await Promise.all([fetchBytes(base + 'phrases.dat'), fetchBytes(base + 'totals.dat')]);
     bytes = text;
     n = meta.count;
     starts = new Uint32Array(n + 1);

@@ -37,4 +37,4 @@ Android builds need JDK 21 and the Android SDK (`android/local.properties` point
 - [Open English WordNet](https://github.com/globalwordnet/english-wordnet) 2025 lemmas (CC BY 4.0)
 - Short sentences and clauses from about 70 public-domain books on [Project Gutenberg](https://www.gutenberg.org/), including the King James Bible, Shakespeare, Milton, Dante, Homer and Plato
 
-Each phrase is stored once, alphabetically, with its cipher totals in a separate compact file (16.7 MB compressed in total). The worker builds its lookup index on the device.
+Each phrase is stored once, alphabetically, with its cipher totals in a separate compact file (16.7 MB compressed in total). The files are gzipped but named `.dat`, because Android's build tools unzip `.gz` assets and drop the extension. The worker builds its lookup index on the device.

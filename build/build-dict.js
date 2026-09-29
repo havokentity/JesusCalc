@@ -6,11 +6,13 @@
 // WordNet lemmas, one per line) and gutenberg/pg*.txt (Project Gutenberg plain-text books).
 //
 // Output (each phrase stored once):
-//   phrases.txt.gz  every phrase, alphabetical, newline-separated
-//   totals.bin.gz   one Uint16 column per stored cipher, in phrase order, split into a
+//   phrases.dat     gzipped: every phrase, alphabetical, newline-separated
+//   totals.dat      gzipped: one Uint16 column per stored cipher, in phrase order, split into a
 //                   low-byte plane and a high-byte plane (the high bytes compress very well)
 //   meta.json       counts, stored ciphers and sources
 // The dictionary worker (src/dict.worker.js) builds its lookup index from these on the device.
+// The files are gzipped but deliberately not named .gz: Android's build tools unzip .gz assets
+// and drop the extension, which would break the app's file paths.
 import fs from 'node:fs';
 import path from 'node:path';
 import zlib from 'node:zlib';
@@ -78,11 +80,11 @@ fs.rmSync(out, { recursive: true, force: true });
 fs.mkdirSync(out, { recursive: true });
 const text = zlib.gzipSync(kept.join('\n'), { level: 9 });
 const nums = zlib.gzipSync(bin, { level: 9 });
-fs.writeFileSync(path.join(out, 'phrases.txt.gz'), text);
-fs.writeFileSync(path.join(out, 'totals.bin.gz'), nums);
+fs.writeFileSync(path.join(out, 'phrases.dat'), text);
+fs.writeFileSync(path.join(out, 'totals.dat'), nums);
 fs.writeFileSync(path.join(out, 'meta.json'), JSON.stringify({
   count: n, words: kept.filter(p => !p.includes(' ')).length, stored: STORED, sources: counts,
   built: new Date().toISOString().slice(0, 10),
 }, null, 1));
 console.log(`${n.toLocaleString()} phrases (${phrases.size - n} dropped for size), sources`, counts);
-console.log(`phrases.txt.gz ${(text.length / 1e6).toFixed(1)} MB, totals.bin.gz ${(nums.length / 1e6).toFixed(1)} MB`);
+console.log(`phrases.dat ${(text.length / 1e6).toFixed(1)} MB, totals.dat ${(nums.length / 1e6).toFixed(1)} MB`);
